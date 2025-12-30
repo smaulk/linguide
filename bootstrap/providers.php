@@ -1,5 +1,8 @@
 <?php
 
 return [
-    App\Providers\AppServiceProvider::class,
+    \App\Infrastructure\Providers\AppServiceProvider::class,
+    \App\Infrastructure\Providers\DatabaseServiceProvider::class,
+    \App\Infrastructure\Providers\RouteServiceProvider::class,
+    \App\Infrastructure\Providers\TelegramServiceProvider::class,
 ];
