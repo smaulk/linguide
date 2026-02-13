@@ -27,7 +27,7 @@ final class StartHandler extends Handler
     {
         return ReplyKeyboardMarkup::make()
             ->addRow(
-                KeyboardButton::make('Кнопка 1'),
+                KeyboardButton::make('Диалог'),
                 KeyboardButton::make('Кнопка 2'),
             );
     }

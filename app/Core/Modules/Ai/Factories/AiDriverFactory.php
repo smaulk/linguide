@@ -8,7 +8,7 @@ use App\Core\Modules\Ai\Enums\AiDriverType;
 use App\Core\Modules\Ai\Drivers\AiDriver;
 use App\Core\Modules\Ai\Drivers\GeminiDriver;
 
-class AiDriverFactory
+final class AiDriverFactory
 {
     public static function make(AiDriverType $providerType, array $config = []): AiDriver
     {

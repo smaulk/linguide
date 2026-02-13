@@ -4,8 +4,14 @@ return [
     // The Telegram BOT api token
     'token' => env('TG_BOT_TOKEN'),
 
+    'webhook_secret_path' => env('TG_WEBHOOK_SECRET_PATH'),
+
+    'webhook_path' => 'telegram',
+
     // if the webhook mode must validate the incoming IP range is from a telegram server
-    'safe_mode' => env('APP_ENV', 'local') === 'production',
+    // 'safe_mode' => env('APP_ENV', 'local') === 'production',
+
+    'safe_mode' => true,
 
     // Extra or specific configurations
     'config' => [],

@@ -13,4 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })
+    ->withCommands([
+        __DIR__.'/../app/Interfaces/Console/Commands',
+    ])
+
+    ->create();

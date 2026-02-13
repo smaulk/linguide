@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Core\Common\Traits;
+namespace App\Core\Common\Concerns;
 
 use App\Core\Common\Base\Task;
 
