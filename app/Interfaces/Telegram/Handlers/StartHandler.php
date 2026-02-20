@@ -3,32 +3,24 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Handlers;
 
+use App\Interfaces\Telegram\Keyboards\Reply\MainMenuReplyKeyboard;
+use App\Interfaces\Telegram\Parents\Handler;
 use SergiX44\Nutgram\Nutgram;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
-use SergiX44\Nutgram\Telegram\Types\Message\Message;
 
 final class StartHandler extends Handler
 {
-    protected function handle(Nutgram $bot, ...$parameters): ?Message
+    public function __construct(private readonly MainMenuReplyKeyboard $keyboard) {}
+
+    public function __invoke(Nutgram $bot): void
     {
-        return $bot->sendMessage(
+        $bot->sendMessage(
             text: $this->getText(),
-            reply_markup: $this->getKeyboard(),
+            reply_markup: $this->keyboard->make(),
         );
     }
 
     private function getText(): string
     {
         return 'Добро пожаловать в Linguide - бот для изучения английского языка!';
-    }
-
-    private function getKeyboard(): ReplyKeyboardMarkup
-    {
-        return ReplyKeyboardMarkup::make()
-            ->addRow(
-                KeyboardButton::make('Диалог'),
-                KeyboardButton::make('Кнопка 2'),
-            );
     }
 }

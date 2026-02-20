@@ -8,19 +8,13 @@ use SergiX44\Nutgram\Nutgram;
 
 trait InteractsWithAppUser
 {
-    private int $appUserId;
-
-    private function setAppUserId(Nutgram $bot): void
+    protected function getAppUserId(Nutgram $bot): int
     {
         $appUserId = $bot->get('appUserId');
         if (!is_int($appUserId)) {
-            throw new RuntimeException('Пользователь не определен');
+            throw new RuntimeException('User is not defined');
         }
-        $this->appUserId = $appUserId;
-    }
 
-    public function getAppUserId(): int
-    {
-        return $this->appUserId;
+        return $appUserId;
     }
 }

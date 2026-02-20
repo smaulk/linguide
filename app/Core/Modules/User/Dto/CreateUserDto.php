@@ -3,21 +3,21 @@ declare(strict_types=1);
 
 namespace App\Core\Modules\User\Dto;
 
-use App\Core\Common\Base\Dto;
+use App\Core\Common\Parents\Dto;
 use App\Core\Modules\User\Enums\UserProviderType;
 
 final readonly class CreateUserDto extends Dto
 {
     private function __construct(
         public string $name,
-        public UserIdentityDto $identity,
+        public EmailUserIdentityDto|ExternalUserIdentityDto $identity,
     ){}
 
     public static function fromEmail(string $name, string $email, string $password): self
     {
         return new self(
             name: $name,
-            identity: UserIdentityDto::fromEmail($email, $password),
+            identity: new EmailUserIdentityDto($email, $password),
         );
     }
 
@@ -25,7 +25,7 @@ final readonly class CreateUserDto extends Dto
     {
         return new self(
             name: $name,
-            identity: UserIdentityDto::fromTelegram($tgUserId),
+            identity: new ExternalUserIdentityDto(UserProviderType::TELEGRAM, $tgUserId),
         );
     }
 }

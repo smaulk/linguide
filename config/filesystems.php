@@ -60,6 +60,10 @@ return [
             'report' => false,
         ],
 
+        'instructions' => [
+            'driver' => 'local',
+            'root' => resource_path('ai/instructions'),
+        ],
     ],
 
     /*

@@ -9,22 +9,29 @@ use App\Core\Modules\User\Dto\CreateUserDto;
 use App\Core\Modules\User\Dto\FindUserDto;
 use App\Core\Modules\User\Dto\UserDto;
 use App\Core\Modules\User\Exceptions\InvalidUserDataException;
-use App\Core\Modules\User\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use App\Interfaces\Telegram\Parents\TelegramMiddleware;
+use Psr\Log\LoggerInterface;
 use SergiX44\Nutgram\Nutgram;
+use SergiX44\Nutgram\Telegram\Types\User\User as TelegramUser;
 use Throwable;
 
 final class ResolveTelegramUser extends TelegramMiddleware
 {
+    public function __construct(
+        private readonly FindUserAction $findUserAction,
+        private readonly CreateUserAction $createUserAction,
+        private readonly LoggerInterface $logger,
+    ){}
+
     public function __invoke(Nutgram $bot, callable $next): void
     {
-        $tgUserId = $bot->userId();
-        if ($tgUserId === null) {
+        $tgUser = $bot->user();
+        if ($tgUser === null) {
             return;
         }
+        $tgUserId = (string)$tgUser->id;
 
-        $userDto = $this->resolveUser($bot, (string)$tgUserId);
+        $userDto = $this->resolveUser($tgUser, $tgUserId);
         if ($userDto === null) {
             return;
         }
@@ -33,7 +40,7 @@ final class ResolveTelegramUser extends TelegramMiddleware
         $next($bot);
     }
 
-    private function resolveUser(Nutgram $bot, string $tgUserId): ?UserDto
+    private function resolveUser(TelegramUser $tgUser, string $tgUserId): ?UserDto
     {
         // Ищем пользователя
         $userDto = $this->findUser($tgUserId);
@@ -41,9 +48,9 @@ final class ResolveTelegramUser extends TelegramMiddleware
             return $userDto;
         }
 
-        // Создаем пользователя (телеграму нельзя отправлять ошибку)
+        // Создаем пользователя (в телеграм нельзя отвечать ошибкой)
         try {
-            return $this->createUser($bot, $tgUserId);
+            return $this->createUser($tgUser, $tgUserId);
         } catch (InvalidUserDataException $e) {
             $this->logException($e, $tgUserId);
             return null;
@@ -55,7 +62,7 @@ final class ResolveTelegramUser extends TelegramMiddleware
 
     private function findUser(string $tgUserId): ?UserDto
     {
-        return $this->action(FindUserAction::class)->run(
+        return $this->findUserAction->run(
             FindUserDto::fromTelegram($tgUserId),
         );
     }
@@ -64,25 +71,19 @@ final class ResolveTelegramUser extends TelegramMiddleware
      * @throws Throwable
      * @throws InvalidUserDataException
      */
-    private function createUser(Nutgram $bot, string $tgUserId): UserDto
+    private function createUser(TelegramUser $tgUser, string $tgUserId): UserDto
     {
-        return $this->action(CreateUserAction::class)->run(
-            CreateUserDto::fromTelegram($this->resolveUserName($bot), $tgUserId),
+        return $this->createUserAction->run(
+            CreateUserDto::fromTelegram(trim($tgUser->first_name), $tgUserId),
         );
-    }
-
-    private function resolveUserName(Nutgram $bot): string
-    {
-        $u = $bot->user();
-        return trim($u?->first_name ?? $u?->username ?? 'Unknown');
     }
 
     private function logException(Throwable $e, string $tgUserId): void
     {
-        Log::warning('Telegram user resolve failed', [
+        $this->logger->warning('Telegram user resolve failed', [
             'tg_user_id' => $tgUserId,
-            'exception' => $e::class,
-            'message' => $e->getMessage(),
+            'exception'  => $e::class,
+            'message'    => $e->getMessage(),
         ]);
     }
 }

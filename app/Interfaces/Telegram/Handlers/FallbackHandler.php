@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Handlers;
 
+use App\Interfaces\Telegram\Parents\Handler;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Message\Message;
 
 final class FallbackHandler extends Handler
 {
-    protected function handle(Nutgram $bot, ...$parameters): ?Message
+    public function __invoke(Nutgram $bot): void
     {
-        return $bot->sendMessage('Извините, я вас не понимаю.');
+        $bot->sendMessage('Извините, я вас не понимаю.');
     }
 }

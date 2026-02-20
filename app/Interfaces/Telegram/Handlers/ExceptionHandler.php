@@ -3,23 +3,24 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Handlers;
 
-
+use App\Interfaces\Telegram\Parents\Handler;
 use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Message\Message;
+use Throwable;
 
 final class ExceptionHandler extends Handler
 {
-    protected function handle(Nutgram $bot, ...$parameters): ?Message
+    public function __invoke(Nutgram $bot, Throwable $exception): void
     {
-        [$exception] = $parameters;
         Log::warning('Unknown handler exception', [
             'tg_user_id'  => $bot->userId(),
-            'app_user_id' => $this->getAppUserId(),
+            'app_user_id' => $this->getAppUserId($bot),
             'exception'   => $exception::class,
             'message'     => $exception->getMessage(),
         ]);
 
-        return $bot->sendMessage('Произошла неизвестная ошибка :(');
+        $bot->sendMessage('Произошла неизвестная ошибка :(');
     }
 }

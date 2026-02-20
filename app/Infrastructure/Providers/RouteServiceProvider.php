@@ -22,6 +22,10 @@ class RouteServiceProvider extends ServiceProvider
     private function loadApiRoutes(): void
     {
         $paths = glob(app_path('Interfaces/*/Routes/api.*'));
+        if(!$paths) {
+            return;
+        }
+
         foreach ($paths as $route_path) {
             Route::middleware('api')
                 ->prefix('api')
@@ -32,6 +36,10 @@ class RouteServiceProvider extends ServiceProvider
     private function loadWebhookRoutes(): void
     {
         $paths = glob(app_path('Interfaces/*/Routes/webhooks.*'));
+        if(!$paths) {
+            return;
+        }
+
         foreach ($paths as $route_path) {
             Route::prefix('webhooks')
                 ->group($route_path);

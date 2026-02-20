@@ -3,26 +3,27 @@ declare(strict_types=1);
 
 namespace App\Core\Modules\Ai\Factories;
 
-use App\Core\Modules\Ai\Dto\GeminiConfigDto;
-use App\Core\Modules\Ai\Enums\AiDriverType;
-use App\Core\Modules\Ai\Drivers\AiDriver;
+use App\Core\Modules\Ai\Contracts\AiDriverContract;
 use App\Core\Modules\Ai\Drivers\GeminiDriver;
+use App\Core\Modules\Ai\Enums\AiDriverType;
+use App\Infrastructure\Ai\Resolvers\AiDriverConfigResolver;
 
-final class AiDriverFactory
+final readonly class AiDriverFactory
 {
-    public static function make(AiDriverType $providerType, array $config = []): AiDriver
-    {
-        // Объединяем дефолтный конфиг с переданным, перезаписывая значения
-        $config = array_merge($providerType->defaultConfig(), $config);
+    public function __construct(
+        private AiDriverConfigResolver $configResolver,
+    ){}
 
-        return match ($providerType) {
-            AiDriverType::GEMINI => new GeminiDriver(
-                new GeminiConfigDto(
-                    apiKey: $config['apiKey'],
-                    apiVersion: $config['apiVersion'],
-                    model: $config['model'],
-                ),
-            ),
+    /**
+     * @param AiDriverType $driverType
+     * @return AiDriverContract
+     */
+    public function make(AiDriverType $driverType): AiDriverContract
+    {
+        $config = $this->configResolver->resolve($driverType);
+
+        return match ($driverType) {
+            AiDriverType::GEMINI => new GeminiDriver($config),
         };
     }
 }
