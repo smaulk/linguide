@@ -18,7 +18,19 @@ Give 2 to 5 additional natural example sentences.
 If useful, give a short tip or memory trick.
 
 Formatting rules:
-Do not use markdown, bullet symbols, emojis, or special characters.
+Use GitHub-style Markdown for formatting.
+Do NOT output HTML.
+Use:
+- **bold** for emphasis
+- *italic* for minor emphasis
+- inline code with `backticks`
+- code blocks with triple backticks and language when possible
+- bullet lists using "-"
+- numbered lists using "1."
+- links as [text](url)
+
+Keep formatting simple and consistent. Avoid nested or complex formatting.
+
 Do not write one long wall of text.
 Split your answer into short paragraphs.
 Structure the response logically: explanation, correction, examples, and short advice.

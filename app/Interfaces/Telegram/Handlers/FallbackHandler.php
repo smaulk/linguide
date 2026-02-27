@@ -5,7 +5,6 @@ namespace App\Interfaces\Telegram\Handlers;
 
 use App\Interfaces\Telegram\Parents\Handler;
 use SergiX44\Nutgram\Nutgram;
-use SergiX44\Nutgram\Telegram\Types\Message\Message;
 
 final class FallbackHandler extends Handler
 {

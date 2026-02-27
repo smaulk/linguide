@@ -4,25 +4,19 @@ declare(strict_types=1);
 namespace App\Interfaces\Telegram\Handlers\Conversations;
 
 use App\Core\Modules\Ai\Actions\AskConversationAiAction;
-use App\Core\Modules\Ai\Dto\AiResponseDto;
 use App\Core\Modules\Ai\Dto\AskConversationAiDto;
-use App\Core\Modules\Ai\Enums\AiAgentType;
 use App\Core\Modules\AiConversation\Actions\CreateAiConversationAction;
 use App\Core\Modules\AiConversation\Dto\AiMessageDto;
-use App\Core\Modules\AiConversation\Dto\CreateAiMessagesDto;
 use App\Core\Modules\AiConversation\Enums\AiConversationMode;
-use App\Core\Modules\AiConversation\Enums\AiMessageRole;
-use App\Core\Modules\AiConversation\Tasks\CreateAiMessagesTask;
 use App\Interfaces\Telegram\Commands\AiTalkCommand;
 use App\Interfaces\Telegram\Keyboards\Reply\AiTalkReplyKeyboard;
 use App\Interfaces\Telegram\Keyboards\Reply\MainMenuReplyKeyboard;
 use App\Interfaces\Telegram\Parents\Conversation;
-use Illuminate\Support\Facades\Log;
+use App\Interfaces\Telegram\Response\Markdown\MarkdownSender;
+use League\CommonMark\Exception\CommonMarkException;
 use Psr\SimpleCache\InvalidArgumentException;
 use SergiX44\Nutgram\Nutgram;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
-use SergiX44\Nutgram\Telegram\Types\Message\Message;
+use SergiX44\Nutgram\Telegram\Properties\ChatAction;
 use Throwable;
 
 final class TalkConversation extends Conversation
@@ -32,6 +26,7 @@ final class TalkConversation extends Conversation
     public function __construct(
         private readonly CreateAiConversationAction $createConversationAction,
         private readonly AskConversationAiAction $askConversationAction,
+        private readonly MarkdownSender $markdownSender,
         private readonly MainMenuReplyKeyboard $mainMenuKeyboard,
         private readonly AiTalkReplyKeyboard $talkKeyboard,
     ){}
@@ -43,7 +38,10 @@ final class TalkConversation extends Conversation
     public function start(Nutgram $bot): void
     {
         $this->conversationId = $this->createAiConversation($this->getAppUserId($bot));
-        $this->sendMessage($bot, 'Вы вошли в режим диалога с ИИ!');
+        $bot->sendMessage(
+            text: 'Вы вошли в режим диалога с ИИ.',
+            reply_markup: $this->talkKeyboard->make(),
+        );
         $this->next('sendMessageAi');
     }
 
@@ -64,15 +62,16 @@ final class TalkConversation extends Conversation
 
         if ($this->checkEndMessage($messageText)) {
             $bot->sendMessage(
-                text: 'Вы вышли из режима диалога с ИИ!',
+                text: 'Вы вышли из режима диалога с ИИ.',
                 reply_markup: $this->mainMenuKeyboard->make(),
             );
             $this->end();
             return;
         }
 
+        $this->sendTyping($bot);
         $aiResponse = $this->askConversationAi($messageText, $message->message_id);
-        $this->sendMessage($bot, $aiResponse->content);
+        $this->sendMarkdownMessage($bot, $aiResponse->content);
     }
 
     /**
@@ -86,6 +85,9 @@ final class TalkConversation extends Conversation
         );
     }
 
+    /**
+     * @throws Throwable
+     */
     private function askConversationAi(string $content, int $messageId): AiMessageDto
     {
         return $this->askConversationAction->run(
@@ -97,12 +99,17 @@ final class TalkConversation extends Conversation
         );
     }
 
-    private function sendMessage(Nutgram $bot, string $message): void
+    /**
+     * @throws CommonMarkException
+     */
+    private function sendMarkdownMessage(Nutgram $bot, string $message): void
     {
-        $bot->sendMessage(
-            text: $message,
-            reply_markup: $this->talkKeyboard->make(),
-        );
+        $this->markdownSender->send(bot: $bot, text: $message);
+    }
+
+    private function sendTyping(Nutgram $bot): void
+    {
+        $bot->sendChatAction(ChatAction::TYPING);
     }
 
     private function checkEndMessage(string $message): bool

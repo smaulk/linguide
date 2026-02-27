@@ -16,6 +16,7 @@ return [
         'english_talk' => [
             'name'          => 'English Talk', // необязательное
             'instruction'   => 'english_talk',
+            // 'instruction'   => 'test',
             'history_limit' => 20, // необязательное
             'driver'        => 'gemini', // необязательное
         ],
