@@ -4,32 +4,32 @@ declare(strict_types=1);
 namespace App\Core\Modules\User\Actions;
 
 use App\Core\Common\Parents\Action;
-use App\Core\Modules\User\Dto\FindUserDto;
+use App\Core\Modules\User\Dto\FindUserByIdentityDto;
 use App\Core\Modules\User\Dto\UserDto;
 use App\Core\Modules\User\Enums\UserProviderType;
 use App\Core\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
-final class FindUserAction extends Action
+final class FindUserByIdentityAction extends Action
 {
-    public function run(FindUserDto $dto): ?UserDto
+    public function run(FindUserByIdentityDto $dto): ?UserDto
     {
         $user = $this
             ->setConditions(User::query(), $dto)
             ->first();
 
         return $user !== null
-            ? new UserDto($user->id, $user->name)
+            ? new UserDto($user->id, $user->name, $user->level)
             : null;
     }
 
     /**
      * @param Builder<User> $query
-     * @param FindUserDto $dto
+     * @param FindUserByIdentityDto $dto
      * @return Builder<User>
      */
-    public function setConditions(Builder $query, FindUserDto $dto): Builder
+    public function setConditions(Builder $query, FindUserByIdentityDto $dto): Builder
     {
         return $query->whereHas('identities', function (Builder $query) use ($dto) {
             $query->where('provider', $dto->providerType);

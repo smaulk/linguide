@@ -3,18 +3,19 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Concerns;
 
+use App\Core\Modules\User\Dto\UserDto;
 use RuntimeException;
 use SergiX44\Nutgram\Nutgram;
 
 trait InteractsWithAppUser
 {
-    protected function getAppUserId(Nutgram $bot): int
+    protected function getAppUser(Nutgram $bot): UserDto
     {
-        $appUserId = $bot->get('appUserId');
-        if (!is_int($appUserId)) {
+        $appUser = $bot->get('appUser');
+        if (!($appUser instanceof UserDto)) {
             throw new RuntimeException('User is not defined');
         }
 
-        return $appUserId;
+        return $appUser;
     }
 }

@@ -16,7 +16,7 @@ final class ExceptionHandler extends Handler
     {
         Log::warning('Unknown handler exception', [
             'tg_user_id'  => $bot->userId(),
-            'app_user_id' => $this->getAppUserId($bot),
+            'app_user_id' => $this->getAppUser($bot)->id,
             'exception'   => $exception::class,
             'message'     => $exception->getMessage(),
         ]);

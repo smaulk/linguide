@@ -10,11 +10,10 @@ use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 
 final class AiTalkReplyKeyboard extends ReplyKeyboard
 {
-    public function make(): ReplyKeyboardMarkup
+    protected function rows(): array
     {
-        return ReplyKeyboardMarkup::make()
-            ->addRow(
-                KeyboardButton::make(AiTalkCommand::STOP_TALK->value),
-            );
+        return [
+            [KeyboardButton::make(AiTalkCommand::STOP_TALK->value)],
+        ];
     }
 }

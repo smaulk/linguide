@@ -6,6 +6,7 @@ return [
 
     'drivers' => [
         'gemini' => [
+            'base_url'    => 'https://generativelanguage.googleapis.com',
             'api_key'     => env('GEMINI_API_KEY'),
             'api_version' => 'v1beta',
             'model'       => 'gemini-2.5-flash-lite'

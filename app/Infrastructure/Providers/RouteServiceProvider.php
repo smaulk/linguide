@@ -22,7 +22,7 @@ class RouteServiceProvider extends ServiceProvider
     private function loadApiRoutes(): void
     {
         $paths = glob(app_path('Interfaces/*/Routes/api.*'));
-        if(!$paths) {
+        if($paths === false) {
             return;
         }
 
@@ -36,7 +36,7 @@ class RouteServiceProvider extends ServiceProvider
     private function loadWebhookRoutes(): void
     {
         $paths = glob(app_path('Interfaces/*/Routes/webhooks.*'));
-        if(!$paths) {
+        if($paths === false) {
             return;
         }
 

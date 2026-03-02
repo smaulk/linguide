@@ -8,6 +8,7 @@ use App\Core\Common\Parents\Dto;
 final readonly class AiDriverConfigDto extends Dto
 {
     public function __construct(
+        public string $baseUrl,
         public string $apiKey,
         public string $model,
         public ?string $apiVersion = null,

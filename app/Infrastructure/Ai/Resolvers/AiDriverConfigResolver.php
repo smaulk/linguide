@@ -23,6 +23,7 @@ final readonly class AiDriverConfigResolver
 
         try {
             return new AiDriverConfigDto(
+                baseUrl: $config->string('base_url'),
                 apiKey: $config->string('api_key'),
                 model: $config->string('model'),
                 apiVersion: $config->nullableString('api_version')

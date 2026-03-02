@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Interfaces\Telegram\Middlewares;
 
 use App\Core\Modules\User\Actions\CreateUserAction;
-use App\Core\Modules\User\Actions\FindUserAction;
+use App\Core\Modules\User\Actions\FindUserByIdentityAction;
 use App\Core\Modules\User\Dto\CreateUserDto;
-use App\Core\Modules\User\Dto\FindUserDto;
+use App\Core\Modules\User\Dto\FindUserByIdentityDto;
 use App\Core\Modules\User\Dto\UserDto;
 use App\Core\Modules\User\Exceptions\InvalidUserDataException;
 use App\Interfaces\Telegram\Parents\TelegramMiddleware;
@@ -15,10 +15,10 @@ use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\User\User as TelegramUser;
 use Throwable;
 
-final class ResolveTelegramUser extends TelegramMiddleware
+final class ResolveUserTgMiddleware extends TelegramMiddleware
 {
     public function __construct(
-        private readonly FindUserAction $findUserAction,
+        private readonly FindUserByIdentityAction $findUserAction,
         private readonly CreateUserAction $createUserAction,
         private readonly LoggerInterface $logger,
     ){}
@@ -36,7 +36,7 @@ final class ResolveTelegramUser extends TelegramMiddleware
             return;
         }
 
-        $bot->set('appUserId', $userDto->id);
+        $bot->set('appUser', $userDto);
         $next($bot);
     }
 
@@ -63,7 +63,7 @@ final class ResolveTelegramUser extends TelegramMiddleware
     private function findUser(string $tgUserId): ?UserDto
     {
         return $this->findUserAction->run(
-            FindUserDto::fromTelegram($tgUserId),
+            FindUserByIdentityDto::fromTelegram($tgUserId),
         );
     }
 

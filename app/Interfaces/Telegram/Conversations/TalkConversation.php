@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Interfaces\Telegram\Handlers\Conversations;
+namespace App\Interfaces\Telegram\Conversations;
 
 use App\Core\Modules\Ai\Actions\AskConversationAiAction;
 use App\Core\Modules\Ai\Dto\AskConversationAiDto;
@@ -37,7 +37,8 @@ final class TalkConversation extends Conversation
      */
     public function start(Nutgram $bot): void
     {
-        $this->conversationId = $this->createAiConversation($this->getAppUserId($bot));
+        $appUser = $this->getAppUser($bot);
+        $this->conversationId = $this->createAiConversation($appUser->id);
         $bot->sendMessage(
             text: 'Вы вошли в режим диалога с ИИ.',
             reply_markup: $this->talkKeyboard->make(),

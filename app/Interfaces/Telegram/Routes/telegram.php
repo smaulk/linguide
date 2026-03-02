@@ -3,11 +3,19 @@
 
 use App\Interfaces\Telegram\Commands\BaseCommand;
 use App\Interfaces\Telegram\Commands\MainMenuCommand;
+use App\Interfaces\Telegram\Conversations\TalkConversation;
 use App\Interfaces\Telegram\Handlers\AskAiHandler;
-use App\Interfaces\Telegram\Handlers\Conversations\TalkConversation;
-use App\Interfaces\Telegram\Handlers\FallbackHandler;
 use App\Interfaces\Telegram\Handlers\ExceptionHandler;
+use App\Interfaces\Telegram\Handlers\FallbackHandler;
+use App\Interfaces\Telegram\Handlers\SetUserLevelHandler;
 use App\Interfaces\Telegram\Handlers\StartHandler;
+use App\Interfaces\Telegram\Middlewares\OnboardingUserTgMiddleware;
+
+// Онбординг - выбор уровня языка
+$bot->onCallbackQueryData(
+    BaseCommand::SET_LEVEL_CALLBACK->value . '{level}',
+    SetUserLevelHandler::class
+)->skipGlobalMiddlewares([OnboardingUserTgMiddleware::class]);
 
 $bot->onException(ExceptionHandler::class);
 $bot->fallback(FallbackHandler::class);

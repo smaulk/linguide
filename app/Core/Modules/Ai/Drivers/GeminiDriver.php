@@ -6,34 +6,19 @@ namespace App\Core\Modules\Ai\Drivers;
 use App\Core\Modules\Ai\Dto\AiRequestDto;
 use App\Core\Modules\Ai\Dto\AiResponseDto;
 use App\Core\Modules\AiConversation\Enums\AiMessageRole;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use Psr\Http\Message\ResponseInterface;
+use Illuminate\Http\Client\Response;
 
 final class GeminiDriver extends AiDriver
 {
-    private const string BASE_URL = 'https://generativelanguage.googleapis.com';
-
-    protected function makeClient(): Client
+    protected function headers(): array
     {
-        return new Client([
-            'base_uri' => self::BASE_URL,
-            'headers'  => [
-                'Content-Type'   => 'application/json',
-                'X-goog-api-key' => $this->config->apiKey,
-            ],
-        ]);
+        return ['X-goog-api-key' => $this->config->apiKey];
     }
 
-    /**
-     * @throws GuzzleException
-     */
-    protected function callApi(array $payload): ResponseInterface
+    protected function callApi(array $payload): Response
     {
         $modelPath = "/{$this->config->apiVersion}/models/{$this->config->model}";
-        return $this->client->post($modelPath . ':generateContent', [
-            'json' => $payload,
-        ]);
+        return $this->request()->post($modelPath . ':generateContent', $payload);
     }
 
     protected function mapRequest(AiRequestDto $request): array

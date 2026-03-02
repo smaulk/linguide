@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Providers;
 
-use App\Interfaces\Telegram\Middlewares\ResolveTelegramUser;
-use App\Interfaces\Telegram\Parents\TelegramMiddleware;
+use App\Interfaces\Telegram\Contracts\TelegramMiddlewareContract;
+use App\Interfaces\Telegram\Middlewares\OnboardingUserTgMiddleware;
+use App\Interfaces\Telegram\Middlewares\ResolveUserTgMiddleware;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use SergiX44\Nutgram\Conversations\Conversation;
@@ -42,12 +43,13 @@ class TelegramServiceProvider extends ServiceProvider
     }
 
     /**
-     * @return list<class-string<TelegramMiddleware>>
+     * @return list<class-string<TelegramMiddlewareContract>>
      */
     protected function middlewares(): array
     {
         return [
-            ResolveTelegramUser::class,
+            ResolveUserTgMiddleware::class,
+            OnboardingUserTgMiddleware::class,
         ];
     }
 }

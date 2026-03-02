@@ -6,7 +6,7 @@ namespace App\Core\Modules\User\Dto;
 use App\Core\Common\Parents\Dto;
 use App\Core\Modules\User\Enums\UserProviderType;
 
-final readonly class FindUserDto extends Dto
+final readonly class FindUserByIdentityDto extends Dto
 {
     private function __construct(
         public UserProviderType $providerType,
