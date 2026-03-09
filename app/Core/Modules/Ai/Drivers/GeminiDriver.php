@@ -7,6 +7,7 @@ use App\Core\Modules\Ai\Dto\AiRequestDto;
 use App\Core\Modules\Ai\Dto\AiResponseDto;
 use App\Core\Modules\AiConversation\Enums\AiMessageRole;
 use Illuminate\Http\Client\Response;
+use RuntimeException;
 
 final class GeminiDriver extends AiDriver
 {
@@ -65,7 +66,12 @@ final class GeminiDriver extends AiDriver
 
     protected function mapResponse(array $response): AiResponseDto
     {
-        $candidate = $response['candidates'][0];
+        $candidate = $response['candidates'][0] ?? null;
+        if ($candidate === null) {
+            throw new RuntimeException(
+                "Gemini ai driver failed response:\n" . json_encode($response, JSON_PRETTY_PRINT)
+            );
+        }
 
         return new AiResponseDto(
             text: $candidate['content']['parts'][0]['text'],

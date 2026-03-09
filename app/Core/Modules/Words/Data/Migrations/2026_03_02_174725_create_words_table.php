@@ -1,0 +1,31 @@
+<?php
+
+use App\Core\Modules\Words\Enums\PartOfSpeechType;
+use App\Core\Modules\User\Enums\LanguageLevel;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('words', function (Blueprint $table) {
+            $table->id();
+
+            $table->text('text');
+            $table->enum('pos', PartOfSpeechType::values());
+            $table->enum('level', LanguageLevel::values());
+
+            $table->timestampTz('created_at');
+
+            $table->unique(['text', 'pos']);
+            $table->index('level');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('words');
+    }
+};

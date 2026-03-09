@@ -71,7 +71,7 @@ final class AskConversationAiAction extends Action
     private function getLastMessages(int $conversationId, int $historyLimit): array
     {
         $messages = $this->getLastMessagesTask->run($conversationId, $historyLimit);
-        return $this->messageMapper->fromCollection($messages);
+        return $this->messageMapper->mapModelsToDtoArray($messages);
     }
 
     private function makeUserMessage(AskConversationAiDto $dto): AiMessageDto

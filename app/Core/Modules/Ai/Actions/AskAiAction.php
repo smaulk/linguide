@@ -33,7 +33,7 @@ final class AskAiAction extends Action
 
     private function askAgent(AiAgentContract $agent, AiMessageDto $message): AiMessageDto
     {
-        $response = $agent->send([$message]);
+        $response = $agent->send($message);
 
         return new AiMessageDto(
             role: AiMessageRole::ASSISTANT,

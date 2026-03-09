@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestampsTz();
 
             $table->index(['conversation_id', 'id'], 'ai_messages_conversation_id_id');
-            $table->unique('telegram_message_id');
+            $table->unique(['telegram_message_id']);
         });
     }
 

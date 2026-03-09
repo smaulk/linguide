@@ -7,7 +7,7 @@ use App\Core\Modules\Ai\Dto\AiDriverConfigDto;
 use App\Core\Modules\Ai\Enums\AiDriverType;
 use App\Infrastructure\Config\Exceptions\InvalidConfigurationException;
 use App\Infrastructure\Config\Sources\Contracts\ConfigSourceContract;
-use App\Infrastructure\Support\ArrayReader;
+use App\Infrastructure\Support\Classes\ArrayReader;
 use Throwable;
 
 final readonly class AiDriverConfigResolver

@@ -41,7 +41,10 @@ abstract class AiDriver implements AiDriverContract
             ->baseUrl($this->config->baseUrl)
             ->withHeaders($this->headers())
             ->acceptJson()
-            ->asJson();
+            ->asJson()
+            ->retry(3, 1000)
+            ->connectTimeout(5)
+            ->timeout(30);
     }
 
     /**

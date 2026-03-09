@@ -8,7 +8,7 @@ use App\Core\Modules\AiConversation\Models\AiMessage;
 
 final class AiMessageMapper
 {
-    public function fromModel(AiMessage $message): AiMessageDto
+    public function mapModelToDto(AiMessage $message): AiMessageDto
     {
         return new AiMessageDto(
             role: $message->role,
@@ -22,11 +22,11 @@ final class AiMessageMapper
      * @param iterable<AiMessage> $messages
      * @return AiMessageDto[]
      */
-    public function fromCollection(iterable $messages): array
+    public function mapModelsToDtoArray(iterable $messages): array
     {
         $result = [];
         foreach ($messages as $message) {
-            $result[] = $this->fromModel($message);
+            $result[] = $this->mapModelToDto($message);
         }
 
         return $result;

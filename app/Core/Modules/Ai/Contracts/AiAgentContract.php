@@ -9,10 +9,10 @@ use App\Core\Modules\AiConversation\Dto\AiMessageDto;
 interface AiAgentContract
 {
     /**
-     * @param array<AiMessageDto> $messages
+     * @param AiMessageDto|AiMessageDto[] $messages
      * @return AiResponseDto
      */
-    public function send(array $messages): AiResponseDto;
+    public function send(AiMessageDto|array $messages): AiResponseDto;
 
     public function getHistoryLimit(): int;
 

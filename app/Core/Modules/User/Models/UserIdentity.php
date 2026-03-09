@@ -20,6 +20,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property ?DateTimeInterface $created_at
  * @property ?DateTimeInterface $updated_at
  * @property ?DateTimeInterface $deleted_at
+ *
+ * @property-read User $user
  */
 final class UserIdentity extends Model
 {

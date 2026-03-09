@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Middlewares;
 
-use App\Core\Modules\User\Actions\CreateUserAction;
+use App\Core\Modules\User\Actions\RegisterUserAction;
 use App\Core\Modules\User\Actions\FindUserByIdentityAction;
-use App\Core\Modules\User\Dto\CreateUserDto;
+use App\Core\Modules\User\Dto\RegisterUserDto;
 use App\Core\Modules\User\Dto\FindUserByIdentityDto;
 use App\Core\Modules\User\Dto\UserDto;
 use App\Core\Modules\User\Exceptions\InvalidUserDataException;
@@ -19,7 +19,7 @@ final class ResolveUserTgMiddleware extends TelegramMiddleware
 {
     public function __construct(
         private readonly FindUserByIdentityAction $findUserAction,
-        private readonly CreateUserAction $createUserAction,
+        private readonly RegisterUserAction $createUserAction,
         private readonly LoggerInterface $logger,
     ){}
 
@@ -73,8 +73,9 @@ final class ResolveUserTgMiddleware extends TelegramMiddleware
      */
     private function createUser(TelegramUser $tgUser, string $tgUserId): UserDto
     {
+        $userName = trim($tgUser->first_name);
         return $this->createUserAction->run(
-            CreateUserDto::fromTelegram(trim($tgUser->first_name), $tgUserId),
+            RegisterUserDto::fromTelegram($userName, $tgUserId),
         );
     }
 

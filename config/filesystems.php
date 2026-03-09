@@ -64,6 +64,17 @@ return [
             'driver' => 'local',
             'root' => resource_path('ai/instructions'),
         ],
+
+        'words' => [
+            'driver' => 'local',
+            'root' => resource_path('learning/datasets/words'),
+        ],
+
+        'translations' => [
+            'driver' => 'local',
+            'root' => resource_path('learning/datasets/translations'),
+        ],
+
     ],
 
     /*

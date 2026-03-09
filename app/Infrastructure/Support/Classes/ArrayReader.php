@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Infrastructure\Support;
+namespace App\Infrastructure\Support\Classes;
 
 use InvalidArgumentException;
 

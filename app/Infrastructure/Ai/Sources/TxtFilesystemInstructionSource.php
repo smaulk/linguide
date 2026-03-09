@@ -7,7 +7,7 @@ use App\Infrastructure\Ai\Sources\Contracts\InstructionSourceContract;
 use App\Infrastructure\Support\Exceptions\MissingResourceException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 
-final readonly class FilesystemInstructionSource implements InstructionSourceContract
+final readonly class TxtFilesystemInstructionSource implements InstructionSourceContract
 {
     public function __construct(private Filesystem $fs){}
 

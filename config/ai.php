@@ -14,6 +14,7 @@ return [
     ],
 
     'agents' => [
+
         'english_talk' => [
             'name'          => 'English Talk', // необязательное
             'instruction'   => 'english_talk',
@@ -21,5 +22,11 @@ return [
             'history_limit' => 20, // необязательное
             'driver'        => 'gemini', // необязательное
         ],
+
+        'translator' => [
+            'name'          => 'Translator',
+            'instruction'   => 'translator',
+        ],
+
     ],
 ];

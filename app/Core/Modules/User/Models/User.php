@@ -11,6 +11,7 @@ use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * @property int $id
@@ -19,14 +20,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property ?DateTimeInterface $created_at
  * @property ?DateTimeInterface $updated_at
  * @property ?DateTimeInterface $deleted_at
+ *
+ * @property-read Collection<int, UserIdentity> $identities
+ * @property-read Collection<int, AiConversation> $aiConversations
  */
 final class User extends Model implements AuthenticatableContract
 {
     use Authenticatable, SoftDeletes;
-
-    protected $fillable = [
-        'mode',
-    ];
 
     protected $casts = [
         'level' => LanguageLevel::class,

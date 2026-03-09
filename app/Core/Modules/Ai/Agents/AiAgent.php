@@ -7,6 +7,7 @@ use App\Core\Modules\Ai\Contracts\AiAgentContract;
 use App\Core\Modules\Ai\Contracts\AiDriverContract;
 use App\Core\Modules\Ai\Dto\AiRequestDto;
 use App\Core\Modules\Ai\Dto\AiResponseDto;
+use App\Core\Modules\AiConversation\Dto\AiMessageDto;
 use InvalidArgumentException;
 
 final readonly class AiAgent implements AiAgentContract
@@ -37,10 +38,11 @@ final readonly class AiAgent implements AiAgentContract
         return new self($driver, $instruction, $historyLimit, $name);
     }
 
-
-    public function send(array $messages): AiResponseDto
+    public function send(AiMessageDto|array $messages): AiResponseDto
     {
+        $messages = is_array($messages) ? $messages : [$messages];
         $request = new AiRequestDto($messages, $this->instruction);
+
         return $this->driver->send($request);
     }
 

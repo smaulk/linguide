@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property ?array<string, mixed> $meta
  * @property ?DateTimeInterface $created_at
  * @property ?DateTimeInterface $updated_at
+ *
+ * @property-read AiConversation $conversation
  */
 final class AiMessage extends Model
 {
