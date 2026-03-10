@@ -6,7 +6,7 @@ namespace App\Core\Modules\Words\Mappers;
 use App\Core\Modules\Words\Dto\WordTranslationDatasetDto;
 use App\Core\Modules\Words\Dto\TranslationExampleDatasetDto;
 use App\Core\Modules\Words\Dto\WordDatasetDto;
-use App\Core\Modules\Words\Enums\PartOfSpeechType;
+use App\Core\Modules\Words\Enums\PartOfSpeech;
 use App\Core\Modules\Words\Models\TranslationExample;
 use App\Core\Modules\Words\Models\Word;
 use App\Core\Modules\Words\Models\WordTranslation;
@@ -38,7 +38,7 @@ final class WordTranslationsDatasetMapper
     {
         return new WordDatasetDto(
             text: strtolower(trim($rawWord['word'])),
-            pos: PartOfSpeechType::from(strtolower(trim($rawWord['pos']))),
+            pos: PartOfSpeech::from(strtolower(trim($rawWord['pos']))),
             translations: $this->mapRawTranslationsToDto($rawWord['translations'] ?? []),
         );
     }
@@ -96,7 +96,7 @@ final class WordTranslationsDatasetMapper
         return [
             'word'         => $dtoWord->text,
             'pos'          => $dtoWord->pos->value,
-            'translations' => $this->mapDtoTranslationsToRaw($dtoWord->translations ?? []),
+            'translations' => $this->mapDtoTranslationsToRaw($dtoWord->translations),
         ];
     }
 
@@ -110,7 +110,7 @@ final class WordTranslationsDatasetMapper
             'translation' => $translation->text,
             'context_en'  => $translation->context_en,
             'context_ru'  => $translation->context_ru,
-            'examples'    => $this->mapDtoExamplesToRaw($translation->examples ?? []),
+            'examples'    => $this->mapDtoExamplesToRaw($translation->examples),
         ], $dtoTranslations);
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-use App\Core\Modules\Words\Enums\PartOfSpeechType;
+use App\Core\Modules\Words\Enums\PartOfSpeech;
 use App\Core\Modules\User\Enums\LanguageLevel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
 
             $table->text('text');
-            $table->enum('pos', PartOfSpeechType::values());
+            $table->enum('pos', PartOfSpeech::values());
             $table->enum('level', LanguageLevel::values());
 
             $table->timestampTz('created_at');

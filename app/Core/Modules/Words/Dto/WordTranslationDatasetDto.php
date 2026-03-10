@@ -8,12 +8,12 @@ use App\Core\Common\Parents\Dto;
 final readonly class WordTranslationDatasetDto extends Dto
 {
     /**
-     * @param TranslationExampleDatasetDto[]|null $examples
+     * @param TranslationExampleDatasetDto[] $examples
      */
     public function __construct(
         public string $text,
         public string $context_en,
         public string $context_ru,
-        public ?array $examples = null,
+        public array $examples = [],
     ){}
 }

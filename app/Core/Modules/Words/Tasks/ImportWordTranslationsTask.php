@@ -143,7 +143,7 @@ final class ImportWordTranslationsTask extends Task
                 continue;
             }
 
-            foreach ($wordDto->translations ?? [] as $rank => $translationDto) {
+            foreach ($wordDto->translations as $rank => $translationDto) {
                 $rows[] = $word->id;
                 $rows[] = $translationDto->text;
                 $rows[] = $rank + 1;
@@ -188,17 +188,17 @@ final class ImportWordTranslationsTask extends Task
                 continue;
             }
 
-            foreach ($wordDto->translations ?? [] as $translationDto) {
+            foreach ($wordDto->translations as $translationDto) {
                 $key = $this->translationKey($word->id, $translationDto->text, $translationDto->context_en);
                 $translation = $translationsMap[$key] ?? null;
                 if (!$translation) {
                     continue;
                 }
 
-                foreach ($translationDto->examples ?? [] as $example) {
+                foreach ($translationDto->examples as $exampleDto) {
                     $rows[] = $translation->id;
-                    $rows[] = $example->sentence_en;
-                    $rows[] = $example->sentence_ru;
+                    $rows[] = $exampleDto->sentence_en;
+                    $rows[] = $exampleDto->sentence_ru;
 
                     $values[] = '(?::integer, ?, ?)';
                 }

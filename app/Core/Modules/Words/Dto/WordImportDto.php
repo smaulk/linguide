@@ -5,13 +5,13 @@ namespace App\Core\Modules\Words\Dto;
 
 use App\Core\Common\Parents\Dto;
 use App\Core\Modules\User\Enums\LanguageLevel;
-use App\Core\Modules\Words\Enums\PartOfSpeechType;
+use App\Core\Modules\Words\Enums\PartOfSpeech;
 
 final readonly class WordImportDto extends Dto
 {
     public function __construct(
         public string $text,
-        public PartOfSpeechType $pos,
+        public PartOfSpeech $pos,
         public LanguageLevel $level,
     ){}
 }
