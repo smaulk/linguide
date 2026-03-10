@@ -5,7 +5,7 @@ namespace App\Core\Modules\Words\Tasks;
 
 use App\Core\Common\Parents\Task;
 use App\Core\Modules\Words\Dto\ImportWordTranslationsResultDto;
-use App\Core\Modules\Words\Dto\WordDto;
+use App\Core\Modules\Words\Dto\WordDatasetDto;
 use App\Core\Modules\Words\Models\Word;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,7 @@ final class ImportWordTranslationsTask extends Task
     private const int BATCH_SIZE = 500;
 
     /**
-     * @param iterable<WordDto> $words
+     * @param iterable<WordDatasetDto> $words
      * @return ImportWordTranslationsResultDto
      * @throws Throwable
      */
@@ -47,7 +47,7 @@ final class ImportWordTranslationsTask extends Task
     }
 
     /**
-     * @param WordDto[] $buffer
+     * @param WordDatasetDto[] $buffer
      * @param array{"words": int, "translations": int, "examples": int} $stats
      * @throws Throwable
      */
@@ -61,7 +61,7 @@ final class ImportWordTranslationsTask extends Task
     }
 
     /**
-     * @param WordDto[] $dtoWords
+     * @param WordDatasetDto[] $dtoWords
      * @return array{0:int,1:int,2:int}
      * @throws Throwable
      */
@@ -73,7 +73,7 @@ final class ImportWordTranslationsTask extends Task
     }
 
     /**
-     * @param WordDto[] $dtoWords
+     * @param WordDatasetDto[] $dtoWords
      * @return array{0:int,1:int,2:int}
      * @throws Throwable
      */
@@ -113,12 +113,12 @@ final class ImportWordTranslationsTask extends Task
     }
 
     /**
-     * @param WordDto[] $dtoWords
+     * @param WordDatasetDto[] $dtoWords
      * @return Collection<string, Word>
      */
     private function loadWords(array $dtoWords): Collection
     {
-        $textWords = array_map(fn(WordDto $dto) => $dto->text, $dtoWords);
+        $textWords = array_map(fn(WordDatasetDto $dto) => $dto->text, $dtoWords);
 
         return Word::query()
             ->select(['id', 'text', 'pos'])
@@ -130,7 +130,7 @@ final class ImportWordTranslationsTask extends Task
 
     /**
      * @param Collection<string, Word> $words
-     * @param WordDto[] $dtoWords
+     * @param WordDatasetDto[] $dtoWords
      * @return array{0: array<int, mixed>, 1: string[]}
      */
     private function buildTranslationsData(Collection $words, array $dtoWords): array
@@ -174,7 +174,7 @@ final class ImportWordTranslationsTask extends Task
 
     /**
      * @param Collection<string, Word> $words
-     * @param WordDto[] $dtoWords
+     * @param WordDatasetDto[] $dtoWords
      * @param array<string, stdClass> $translationsMap
      * @return array{0: array<int, mixed>, 1: string[]}
      */

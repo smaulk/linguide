@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Providers;
 
-use App\Core\Modules\Words\Mappers\WordTranslationsMapper;
+use App\Core\Modules\Words\Mappers\WordTranslationsDatasetMapper;
 use App\Infrastructure\Learning\Writers\Contracts\WordTranslationsWriterContract;
 use App\Infrastructure\Learning\Writers\JsonFilesystemWordTranslationsWriter;
 use Illuminate\Foundation\Application;
@@ -17,7 +17,7 @@ class WriterServiceProvider extends ServiceProvider
         $this->app->bind(WordTranslationsWriterContract::class, function (Application $app) {
             return new JsonFilesystemWordTranslationsWriter(
                 $app->make(FilesystemFactory::class)->disk('translations'),
-                $app->make(WordTranslationsMapper::class),
+                $app->make(WordTranslationsDatasetMapper::class),
             );
         });
     }

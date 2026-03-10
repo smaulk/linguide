@@ -5,10 +5,10 @@ namespace App\Core\Modules\Words\Dto;
 
 use App\Core\Common\Parents\Dto;
 
-final readonly class WordTranslationDto extends Dto
+final readonly class WordTranslationDatasetDto extends Dto
 {
     /**
-     * @param TranslationExampleDto[]|null $examples
+     * @param TranslationExampleDatasetDto[]|null $examples
      */
     public function __construct(
         public string $text,

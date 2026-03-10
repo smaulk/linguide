@@ -6,10 +6,10 @@ namespace App\Core\Modules\Words\Dto;
 use App\Core\Common\Parents\Dto;
 use App\Core\Modules\Words\Enums\PartOfSpeechType;
 
-final readonly class WordDto extends Dto
+final readonly class WordDatasetDto extends Dto
 {
     /**
-     * @param WordTranslationDto[]|null $translations
+     * @param WordTranslationDatasetDto[]|null $translations
      */
     public function __construct(
         public string $text,

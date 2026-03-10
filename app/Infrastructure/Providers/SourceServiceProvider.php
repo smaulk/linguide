@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Providers;
 
-use App\Core\Modules\Words\Mappers\WordTranslationsMapper;
+use App\Core\Modules\Words\Mappers\WordImportMapper;
+use App\Core\Modules\Words\Mappers\WordTranslationsDatasetMapper;
 use App\Infrastructure\Ai\Sources\Contracts\InstructionSourceContract;
 use App\Infrastructure\Ai\Sources\TxtFilesystemInstructionSource;
 use App\Infrastructure\Config\Sources\Contracts\ConfigSourceContract;
@@ -29,12 +30,13 @@ class SourceServiceProvider extends ServiceProvider
         $this->app->bind(WordSourceContract::class, function (Application $app) {
             return new CsvFilesystemWordSource(
                 $app->make(FilesystemFactory::class)->disk('words'),
+                $app->make(WordImportMapper::class),
             );
         });
         $this->app->bind(WordTranslationsSourceContract::class, function (Application $app) {
             return new JsonFilesystemWordTranslationsSource(
                 $app->make(FilesystemFactory::class)->disk('translations'),
-                $app->make(WordTranslationsMapper::class),
+                $app->make(WordTranslationsDatasetMapper::class),
             );
         });
     }

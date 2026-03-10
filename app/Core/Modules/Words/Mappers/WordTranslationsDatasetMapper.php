@@ -3,22 +3,22 @@ declare(strict_types=1);
 
 namespace App\Core\Modules\Words\Mappers;
 
-use App\Core\Modules\Words\Dto\WordTranslationDto;
-use App\Core\Modules\Words\Dto\TranslationExampleDto;
-use App\Core\Modules\Words\Dto\WordDto;
+use App\Core\Modules\Words\Dto\WordTranslationDatasetDto;
+use App\Core\Modules\Words\Dto\TranslationExampleDatasetDto;
+use App\Core\Modules\Words\Dto\WordDatasetDto;
 use App\Core\Modules\Words\Enums\PartOfSpeechType;
 use App\Core\Modules\Words\Models\TranslationExample;
 use App\Core\Modules\Words\Models\Word;
 use App\Core\Modules\Words\Models\WordTranslation;
 use Illuminate\Database\Eloquent\Collection;
 
-final class WordTranslationsMapper
+final class WordTranslationsDatasetMapper
 {
     //RAW -> DTO
 
     /**
      * @param array<int, array<string, mixed>> $rawWords
-     * @return WordDto[]
+     * @return WordDatasetDto[]
      */
     public function mapRawArrayToDtoArray(array $rawWords): array
     {
@@ -32,40 +32,40 @@ final class WordTranslationsMapper
 
     /**
      * @param array<string, mixed> $rawWord
-     * @return WordDto
+     * @return WordDatasetDto
      */
-    public function mapRawToDto(array $rawWord): WordDto
+    public function mapRawToDto(array $rawWord): WordDatasetDto
     {
-        return new WordDto(
-            text: strtolower($rawWord['word']),
-            pos: PartOfSpeechType::from(strtolower($rawWord['pos'])),
+        return new WordDatasetDto(
+            text: strtolower(trim($rawWord['word'])),
+            pos: PartOfSpeechType::from(strtolower(trim($rawWord['pos']))),
             translations: $this->mapRawTranslationsToDto($rawWord['translations'] ?? []),
         );
     }
 
     /**
      * @param array<int, array<string, mixed>> $rawTranslations
-     * @return WordTranslationDto[]
+     * @return WordTranslationDatasetDto[]
      */
     private function mapRawTranslationsToDto(array $rawTranslations): array
     {
-        return array_map(fn(array $translation) => new WordTranslationDto(
-            text: $translation['translation'],
-            context_en: $translation['context_en'],
-            context_ru: $translation['context_ru'],
+        return array_map(fn(array $translation) => new WordTranslationDatasetDto(
+            text: trim($translation['translation']),
+            context_en: trim($translation['context_en']),
+            context_ru: trim($translation['context_ru']),
             examples: $this->mapRawExamplesToDto($translation['examples'] ?? [])
         ), $rawTranslations);
     }
 
     /**
      * @param array<int, array<string, string>> $rawExamples
-     * @return TranslationExampleDto[]
+     * @return TranslationExampleDatasetDto[]
      */
     private function mapRawExamplesToDto(array $rawExamples): array
     {
-        return array_map(fn(array $example) => new TranslationExampleDto(
-            sentence_en: $example['sentence_en'],
-            sentence_ru: $example['sentence_ru'],
+        return array_map(fn(array $example) => new TranslationExampleDatasetDto(
+            sentence_en: trim($example['sentence_en']),
+            sentence_ru: trim($example['sentence_ru']),
         ), $rawExamples);
     }
 
@@ -74,7 +74,7 @@ final class WordTranslationsMapper
     // DTO -> RAW
 
     /**
-     * @param WordDto[] $dtoWords
+     * @param WordDatasetDto[] $dtoWords
      * @return array<int, array<string, mixed>>
      */
     public function mapDtoArrayToRawArray(array $dtoWords): array
@@ -88,10 +88,10 @@ final class WordTranslationsMapper
     }
 
     /**
-     * @param WordDto $dtoWord
+     * @param WordDatasetDto $dtoWord
      * @return array<string, mixed>
      */
-    public function mapDtoToRaw(WordDto $dtoWord): array
+    public function mapDtoToRaw(WordDatasetDto $dtoWord): array
     {
         return [
             'word'         => $dtoWord->text,
@@ -101,12 +101,12 @@ final class WordTranslationsMapper
     }
 
     /**
-     * @param WordTranslationDto[] $dtoTranslations
+     * @param WordTranslationDatasetDto[] $dtoTranslations
      * @return array<int, array<string, mixed>>
      */
     private function mapDtoTranslationsToRaw(array $dtoTranslations): array
     {
-        return array_map(fn(WordTranslationDto $translation) => [
+        return array_map(fn(WordTranslationDatasetDto $translation) => [
             'translation' => $translation->text,
             'context_en'  => $translation->context_en,
             'context_ru'  => $translation->context_ru,
@@ -115,12 +115,12 @@ final class WordTranslationsMapper
     }
 
     /**
-     * @param TranslationExampleDto[] $dtoExamples
+     * @param TranslationExampleDatasetDto[] $dtoExamples
      * @return array<int, array<string, string>>
      */
     private function mapDtoExamplesToRaw(array $dtoExamples): array
     {
-        return array_map(fn(TranslationExampleDto $example) => [
+        return array_map(fn(TranslationExampleDatasetDto $example) => [
             'sentence_en' => $example->sentence_en,
             'sentence_ru' => $example->sentence_ru,
         ], $dtoExamples);
@@ -132,7 +132,7 @@ final class WordTranslationsMapper
 
     /**
      * @param Word[] $modelWords
-     * @return WordDto[]
+     * @return WordDatasetDto[]
      */
     public function mapModelArrayToDtoArray(array $modelWords): array
     {
@@ -146,11 +146,11 @@ final class WordTranslationsMapper
 
     /**
      * @param Word $modelWord
-     * @return WordDto
+     * @return WordDatasetDto
      */
-    public function mapModelToDto(Word $modelWord): WordDto
+    public function mapModelToDto(Word $modelWord): WordDatasetDto
     {
-        return new WordDto(
+        return new WordDatasetDto(
             text: $modelWord->text,
             pos: $modelWord->pos,
             translations: $this->mapModelTranslationsToDto($modelWord->translations),
@@ -159,11 +159,11 @@ final class WordTranslationsMapper
 
     /**
      * @param Collection<int, WordTranslation> $translations
-     * @return WordTranslationDto[]
+     * @return WordTranslationDatasetDto[]
      */
     private function mapModelTranslationsToDto(Collection $translations): array
     {
-        return $translations->map(fn(WordTranslation $translation) => new WordTranslationDto(
+        return $translations->map(fn(WordTranslation $translation) => new WordTranslationDatasetDto(
             text: $translation->text,
             context_en: $translation->context_en,
             context_ru: $translation->context_ru,
@@ -173,11 +173,11 @@ final class WordTranslationsMapper
 
     /**
      * @param Collection<int, TranslationExample> $examples
-     * @return TranslationExampleDto[]
+     * @return TranslationExampleDatasetDto[]
      */
     private function mapModelExamplesToDto(Collection $examples): array
     {
-        return $examples->map(fn(TranslationExample $example) => new TranslationExampleDto(
+        return $examples->map(fn(TranslationExample $example) => new TranslationExampleDatasetDto(
             sentence_en: $example->sentence_en,
             sentence_ru: $example->sentence_ru,
         ))->all();

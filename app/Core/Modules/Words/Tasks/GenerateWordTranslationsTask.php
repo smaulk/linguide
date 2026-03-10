@@ -9,8 +9,8 @@ use App\Core\Modules\Ai\Enums\AiAgentType;
 use App\Core\Modules\Ai\Factories\AiAgentFactory;
 use App\Core\Modules\AiConversation\Dto\AiMessageDto;
 use App\Core\Modules\AiConversation\Enums\AiMessageRole;
-use App\Core\Modules\Words\Dto\WordDto;
-use App\Core\Modules\Words\Mappers\WordTranslationsMapper;
+use App\Core\Modules\Words\Dto\WordDatasetDto;
+use App\Core\Modules\Words\Mappers\WordTranslationsDatasetMapper;
 use App\Core\Modules\Words\Models\Word;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Log;
@@ -25,12 +25,12 @@ final class GenerateWordTranslationsTask extends Task
 
     public function __construct(
         private readonly AiAgentFactory $agentFactory,
-        private readonly WordTranslationsMapper $mapper,
+        private readonly WordTranslationsDatasetMapper $mapper,
     ){}
 
     /**
      * @param bool $isOnlyEmpty
-     * @return iterable<WordDto[]>
+     * @return iterable<WordDatasetDto[]>
      * @throws BindingResolutionException
      */
     public function run(bool $isOnlyEmpty = false): iterable
@@ -47,7 +47,7 @@ final class GenerateWordTranslationsTask extends Task
 
                 yield $this->mapper->mapRawArrayToDtoArray($translations);
             } catch (Throwable $e) {
-                Log::error('Generate word translations failed: ' . $e->getMessage());
+                Log::warning('Generate word translations failed: ' . $e->getMessage());
             }
         }
     }
@@ -92,7 +92,7 @@ final class GenerateWordTranslationsTask extends Task
         try {
             return $this->parseArrayFromResponse($response);
         } catch (JsonException $e) {
-            Log::error('Generate word translations json decode failed: ' . $e->getMessage());
+            Log::warning('Generate word translations json decode failed: ' . $e->getMessage());
             return null;
         }
     }

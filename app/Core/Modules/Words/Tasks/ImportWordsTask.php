@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace App\Core\Modules\Words\Tasks;
 
 use App\Core\Common\Parents\Task;
-use App\Core\Modules\User\Enums\LanguageLevel;
-use App\Core\Modules\Words\Dto\RawWordDto;
-use App\Core\Modules\Words\Enums\PartOfSpeechType;
+use App\Core\Modules\Words\Dto\WordImportDto;
 use App\Core\Modules\Words\Models\Word;
 
 final class ImportWordsTask extends Task
@@ -14,61 +12,39 @@ final class ImportWordsTask extends Task
     private const int BATCH_SIZE = 500;
 
     /**
-     * @param iterable<RawWordDto> $rawWords
+     * @param iterable<WordImportDto> $dtoWords
      * @return int количество импортированных слов
      */
-    public function run(iterable $rawWords): int
+    public function run(iterable $dtoWords): int
     {
         $buffer = [];
         $imported = 0;
 
-        foreach ($rawWords as $dto) {
-            $row = $this->normalizeWord($dto);
-            if ($row === null) {
-                continue;
-            }
-
-            $buffer[] = $row;
+        foreach ($dtoWords as $dto) {
+            $buffer[] = $this->prepareWordRow($dto);
 
             if (count($buffer) >= self::BATCH_SIZE) {
-                $imported += $this->flushBatch($buffer);
+                $imported += $this->insertBatch($buffer);
                 $buffer = [];
             }
         }
 
         if ($buffer !== []) {
-            $imported += $this->flushBatch($buffer);
+            $imported += $this->insertBatch($buffer);
         }
 
         return $imported;
     }
 
     /**
-     * Преобразует DTO в строку для insert.
-     *
-     * @return array<string,mixed>|null
+     * @return array<string,mixed>
      */
-    private function normalizeWord(RawWordDto $dto): ?array
+    private function prepareWordRow(WordImportDto $dto): array
     {
-        $text = trim($dto->text);
-        $pos = trim($dto->pos);
-        $level = trim($dto->level);
-
-        if ($text === '' || $pos === '' || $level === '') {
-            return null;
-        }
-
-        $pos = PartOfSpeechType::tryFrom(strtolower($pos));
-        $level = LanguageLevel::tryFrom(strtoupper($level));
-
-        if ($pos === null || $level === null) {
-            return null;
-        }
-
         return [
-            'text'       => strtolower($text),
-            'pos'        => $pos->value,
-            'level'      => $level->value,
+            'text'       => $dto->text,
+            'pos'        => $dto->pos->value,
+            'level'      => $dto->level->value,
             'created_at' => now(),
         ];
     }
@@ -76,7 +52,7 @@ final class ImportWordsTask extends Task
     /**
      * @param array<int, array<string, mixed>> $buffer
      */
-    private function flushBatch(array $buffer): int
+    private function insertBatch(array $buffer): int
     {
         return Word::query()->insertOrIgnore($buffer);
     }

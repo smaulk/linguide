@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Learning\Writers\Contracts;
 
-use App\Core\Modules\Words\Dto\WordDto;
+use App\Core\Modules\Words\Dto\WordDatasetDto;
 
 interface WordTranslationsWriterContract
 {
     /**
      * @param string $resourceName имя ресурса
-     * @param WordDto[] $words
+     * @param WordDatasetDto[] $words
      */
     public function write(string $resourceName, array $words): void;
 }

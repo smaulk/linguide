@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Learning\Writers;
 
-use App\Core\Modules\Words\Dto\WordDto;
-use App\Core\Modules\Words\Mappers\WordTranslationsMapper;
+use App\Core\Modules\Words\Dto\WordDatasetDto;
+use App\Core\Modules\Words\Mappers\WordTranslationsDatasetMapper;
 use App\Infrastructure\Learning\Writers\Contracts\WordTranslationsWriterContract;
 use Illuminate\Contracts\Filesystem\Filesystem;
 
@@ -12,7 +12,7 @@ final readonly class JsonFilesystemWordTranslationsWriter implements WordTransla
 {
     public function __construct(
         private Filesystem $fs,
-        private WordTranslationsMapper $mapper,
+        private WordTranslationsDatasetMapper $mapper,
     ){}
 
     public function write(string $resourceName, array $words): void
@@ -31,7 +31,7 @@ final readonly class JsonFilesystemWordTranslationsWriter implements WordTransla
         $this->fs->append($fileName, $json);
     }
 
-    private function getJson(WordDto $word): false|string
+    private function getJson(WordDatasetDto $word): false|string
     {
         return json_encode(
             $this->mapper->mapDtoToRaw($word),

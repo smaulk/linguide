@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Learning\Sources;
 
-use App\Core\Modules\Words\Mappers\WordTranslationsMapper;
+use App\Core\Modules\Words\Mappers\WordTranslationsDatasetMapper;
 use App\Infrastructure\Learning\Concerns\ReadsFilesystemStream;
 use App\Infrastructure\Learning\Sources\Contracts\WordTranslationsSourceContract;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 final readonly class JsonFilesystemWordTranslationsSource implements WordTranslationsSourceContract
 {
@@ -14,7 +16,7 @@ final readonly class JsonFilesystemWordTranslationsSource implements WordTransla
 
     public function __construct(
         private Filesystem $fs,
-        private WordTranslationsMapper $mapper,
+        private WordTranslationsDatasetMapper $mapper,
     ){}
 
     public function get(string $name): iterable
@@ -29,9 +31,13 @@ final readonly class JsonFilesystemWordTranslationsSource implements WordTransla
                     continue;
                 }
 
-                $raw = json_decode($line, true, flags: JSON_THROW_ON_ERROR);
-
-                yield $this->mapper->mapRawToDto($raw);
+                try {
+                    $raw = json_decode($line, true, flags: JSON_THROW_ON_ERROR);
+                    yield $this->mapper->mapRawToDto($raw);
+                } catch (Throwable $e) {
+                    Log::warning('JsonFilesystemWordTranslations failed row mapping: ' . $e->getMessage());
+                    continue;
+                }
             }
         } finally {
             fclose($stream);

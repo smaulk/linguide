@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace App\Core\Modules\Words\Tasks;
 
 use App\Core\Common\Parents\Task;
-use App\Core\Modules\Words\Dto\WordDto;
-use App\Core\Modules\Words\Mappers\WordTranslationsMapper;
+use App\Core\Modules\Words\Dto\WordDatasetDto;
+use App\Core\Modules\Words\Mappers\WordTranslationsDatasetMapper;
 use App\Core\Modules\Words\Models\Word;
 use Illuminate\Support\LazyCollection;
 
@@ -13,10 +13,10 @@ final class GetWordTranslationsTask extends Task
 {
     private const int CHUNK_SIZE = 500;
 
-    public function __construct(private readonly WordTranslationsMapper $mapper){}
+    public function __construct(private readonly WordTranslationsDatasetMapper $mapper){}
 
     /**
-     * @return iterable<WordDto[]>
+     * @return iterable<WordDatasetDto[]>
      */
     public function run(): iterable
     {

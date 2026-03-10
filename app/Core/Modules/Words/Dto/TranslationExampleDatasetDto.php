@@ -5,7 +5,7 @@ namespace App\Core\Modules\Words\Dto;
 
 use App\Core\Common\Parents\Dto;
 
-final readonly class TranslationExampleDto extends Dto
+final readonly class TranslationExampleDatasetDto extends Dto
 {
     public function __construct(
         public string $sentence_en,
