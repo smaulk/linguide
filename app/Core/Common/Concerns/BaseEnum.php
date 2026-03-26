@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Core\Common\Concerns;
 
+use InvalidArgumentException;
+
 trait BaseEnum
 {
     /**
@@ -21,8 +23,14 @@ trait BaseEnum
         return array_map(fn(self $case) => $case->name, self::cases());
     }
 
-    public static function fromName(string $name): self
+    public static function fromName(string $name): static
     {
-        return constant("self::$name");
+        foreach (static::cases() as $case) {
+            if ($case->name === $name) {
+                return $case;
+            }
+        }
+
+        throw new InvalidArgumentException("No enum case with name $name");
     }
 }

@@ -17,7 +17,7 @@ final class WordImportMapper
         return new WordImportDto(
             text: strtolower(trim($raw['text'])),
             pos: PartOfSpeech::from(strtolower(trim($raw['pos']))),
-            level: LanguageLevel::from(strtoupper(trim($raw['level']))),
+            level: LanguageLevel::fromName(strtoupper(trim($raw['level']))),
         );
     }
 }

@@ -8,7 +8,7 @@ use App\Core\Modules\User\Exceptions\InvalidUserDataException;
 
 final readonly class Email extends Vo
 {
-    private function __construct(public string $value) {}
+    private function __construct(private string $value) {}
 
     public static function fromString(string $email): self
     {
@@ -19,5 +19,10 @@ final readonly class Email extends Vo
         }
 
         return new self($email);
+    }
+
+    public function value(): string
+    {
+        return $this->value;
     }
 }

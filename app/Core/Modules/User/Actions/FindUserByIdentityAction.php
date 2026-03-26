@@ -6,22 +6,45 @@ namespace App\Core\Modules\User\Actions;
 use App\Core\Common\Parents\Action;
 use App\Core\Modules\User\Dto\FindUserByIdentityDto;
 use App\Core\Modules\User\Dto\UserDto;
+use App\Core\Modules\User\Dto\UserSettingDto;
 use App\Core\Modules\User\Enums\UserProviderType;
 use App\Core\Modules\User\Models\User;
+use App\Core\Modules\User\Vo\UtcOffset;
+use App\Core\Modules\User\Vo\WordsRepeatLimit;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
+use Throwable;
 
 final class FindUserByIdentityAction extends Action
 {
+    /**
+     * @throws Throwable
+     */
     public function run(FindUserByIdentityDto $dto): ?UserDto
     {
         $user = $this
             ->setConditions(User::query(), $dto)
+            ->with(['settings'])
             ->first();
 
-        return $user !== null
-            ? new UserDto($user->id, $user->name, $user->level)
+        if ($user === null) {
+            return null;
+        }
+
+        $settings = $user->settingsOrFail();
+        $utcOffset = $settings->utc_offset !== null
+            ? UtcOffset::fromInt($settings->utc_offset)
             : null;
+
+        return new UserDto(
+            id: $user->id,
+            name: $user->name,
+            settings: new UserSettingDto(
+                level: $settings->level,
+                utcOffset: $utcOffset,
+                wordsRepeatLimit: WordsRepeatLimit::fromInt($settings->words_repeat_limit),
+            ),
+        );
     }
 
     /**

@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Handlers;
 
-use App\Core\Modules\User\Actions\UpdateUserAction;
+use App\Core\Modules\User\Actions\UpdateUserSettingAction;
 use App\Core\Modules\User\Dto\UserDto;
+use App\Core\Modules\User\Dto\UserSettingDto;
 use App\Core\Modules\User\Enums\LanguageLevel;
 use App\Interfaces\Telegram\Commands\BaseCommand;
 use App\Interfaces\Telegram\Parents\Handler;
@@ -13,25 +14,21 @@ use Throwable;
 
 final class SetUserLevelHandler extends Handler
 {
-    public function __construct(private readonly UpdateUserAction $updateAction){}
+    public function __construct(private readonly UpdateUserSettingAction $updateAction){}
 
     /**
      * @throws Throwable
      */
-    public function __invoke(Nutgram $bot, string $level): void
+    public function __invoke(Nutgram $bot, int $level): void
     {
         $bot->answerCallbackQuery();
 
-        $level = LanguageLevel::from($level);
+        $languageLevel = LanguageLevel::from($level);
         $appUser = $this->getAppUser($bot);
 
-        if($appUser->level !== null){
-            $bot->editMessageText("У вас уже установлен уровень {$appUser->level->value}!");
-            return;
-        }
+        $this->updateUserLevel($appUser, $languageLevel);
 
-        $this->updateUserLevel($appUser, $level);
-        $bot->editMessageText($this->getText($level),);
+        $bot->editMessageText($this->getText($languageLevel));
     }
 
     /**
@@ -39,19 +36,15 @@ final class SetUserLevelHandler extends Handler
      */
     private function updateUserLevel(UserDto $appUser, LanguageLevel $level): void
     {
-        $this->updateAction->run(new UserDto(
-            id: $appUser->id,
-            name: $appUser->name,
+        $this->updateAction->run($appUser->id, new UserSettingDto(
             level: $level,
+            utcOffset: $appUser->settings->utcOffset,
+            wordsRepeatLimit: $appUser->settings->wordsRepeatLimit,
         ));
     }
 
     private function getText(LanguageLevel $level): string
     {
-        $startCommand = BaseCommand::START;
-        return <<<TEXT
-Вы установили для себя уровень {$level->value}.
-Для начала использования введите команду /{$startCommand->value}.
-TEXT;
+        return "Вы установили для себя уровень {$level->name}.";
     }
 }

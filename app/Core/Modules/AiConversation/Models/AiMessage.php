@@ -5,8 +5,8 @@ namespace App\Core\Modules\AiConversation\Models;
 
 use App\Core\Common\Parents\Model;
 use App\Core\Modules\AiConversation\Enums\AiMessageRole;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,8 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property AiMessageRole $role
  * @property string $content
  * @property ?array<string, mixed> $meta
- * @property ?DateTimeInterface $created_at
- * @property ?DateTimeInterface $updated_at
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
  *
  * @property-read AiConversation $conversation
  */

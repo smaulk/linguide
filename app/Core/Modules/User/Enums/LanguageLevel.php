@@ -5,14 +5,14 @@ namespace App\Core\Modules\User\Enums;
 
 use App\Core\Common\Concerns\BaseEnum;
 
-enum LanguageLevel: string
+enum LanguageLevel: int
 {
     use BaseEnum;
 
-    case A1 = 'A1';
-    case A2 = 'A2';
-    case B1 = 'B1';
-    case B2 = 'B2';
-    case C1 = 'C1';
-    case C2 = 'C2';
+    case A1 = 1;
+    case A2 = 2;
+    case B1 = 3;
+    case B2 = 4;
+    case C1 = 5;
+    case C2 = 6;
 }

@@ -11,6 +11,6 @@ final readonly class UserDto extends Dto
     public function __construct(
         public int $id,
         public string $name,
-        public ?LanguageLevel $level = null,
+        public UserSettingDto $settings,
     ){}
 }

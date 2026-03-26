@@ -35,4 +35,17 @@ enum PartOfSpeech: string
             self::NUMBER       => 'число',
         };
     }
+
+    /**
+     * @return self[]
+     */
+    public static function trainable(): array
+    {
+        return [
+            PartOfSpeech::NOUN,
+            PartOfSpeech::VERB,
+            PartOfSpeech::ADJECTIVE,
+            PartOfSpeech::ADVERB,
+        ];
+    }
 }

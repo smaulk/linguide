@@ -4,15 +4,15 @@ declare(strict_types=1);
 namespace App\Core\Modules\Words\Models;
 
 use App\Core\Common\Parents\Model;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $translation_id
  * @property string $sentence_en
  * @property string $sentence_ru
- * @property ?DateTimeInterface $created_at
+ * @property ?Carbon $created_at
  *
  * @property-read WordTranslation $translation
  */

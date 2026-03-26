@@ -72,7 +72,7 @@ final class GenerateWordTranslationsTask extends Task
      */
     private function getTranslatorAgent(): AiAgentContract
     {
-        return $this->agentFactory->make(AiAgentType::TRANSLATOR);
+        return $this->agentFactory->make(AiAgentType::WORD_TRANSLATOR);
     }
 
     /**

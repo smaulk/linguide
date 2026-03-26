@@ -15,12 +15,12 @@ return new class extends Migration
 
             $table->text('text');
             $table->enum('pos', PartOfSpeech::values());
-            $table->enum('level', LanguageLevel::values());
+            $table->unsignedTinyInteger('level');
 
             $table->timestampTz('created_at');
 
             $table->unique(['text', 'pos']);
-            $table->index('level');
+            $table->index(['level']);
         });
     }
 

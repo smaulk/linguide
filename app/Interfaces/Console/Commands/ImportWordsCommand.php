@@ -12,23 +12,23 @@ final class ImportWordsCommand extends Command
 {
     protected $signature = 'learning:words:import
                             {resourceName : Name of resource}
-                            {--force : Truncate words table before import}';
+                            {--fresh : Truncate words table before import}';
 
     protected $description = 'Imports words from resource into a database';
 
     public function handle(ImportWordsAction $importAction): int
     {
         $resourceName = $this->argument('resourceName');
-        $force = $this->option('force') === true;
+        $fresh = $this->option('fresh') === true;
 
-        if ($force) {
+        if ($fresh) {
             if (!$this->confirm('This will truncate the words table. Continue?')) {
                 return self::FAILURE;
             }
         }
 
         try {
-            $importCount = $importAction->run($resourceName, $force);
+            $importCount = $importAction->run($resourceName, $fresh);
         } catch (Throwable $e) {
             Log::error('Error importing words from resource "' . $resourceName . '": ' . $e->getMessage());
             $this->error('Importing words from resource "' . $resourceName . '" failed');

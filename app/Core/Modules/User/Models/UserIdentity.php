@@ -5,9 +5,9 @@ namespace App\Core\Modules\User\Models;
 
 use App\Core\Common\Parents\Model;
 use App\Core\Modules\User\Enums\UserProviderType;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -17,9 +17,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property ?string $email
  * @property ?string $password
  * @property ?string $email_verified_at
- * @property ?DateTimeInterface $created_at
- * @property ?DateTimeInterface $updated_at
- * @property ?DateTimeInterface $deleted_at
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ * @property ?Carbon $deleted_at
  *
  * @property-read User $user
  */

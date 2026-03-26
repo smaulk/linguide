@@ -23,9 +23,9 @@ return [
             'driver'        => 'gemini', // необязательное
         ],
 
-        'translator' => [
-            'name'          => 'Translator',
-            'instruction'   => 'translator',
+        'word_translator' => [
+            'name'          => 'Word Translator',
+            'instruction'   => 'word_translator',
         ],
 
     ],

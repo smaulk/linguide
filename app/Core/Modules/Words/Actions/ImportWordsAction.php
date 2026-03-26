@@ -18,13 +18,13 @@ final class ImportWordsAction extends Action
 
     /**
      * @param string $resourceName имя ресурса
-     * @param bool $force очистить таблицу слов
+     * @param bool $fresh очистить таблицу слов
      * @return int количество импортированных слов
      * @throws MissingResourceException
      */
-    public function run(string $resourceName, bool $force): int
+    public function run(string $resourceName, bool $fresh = false): int
     {
-        if ($force) {
+        if ($fresh) {
             $this->truncateTable();
         }
 

@@ -13,11 +13,10 @@ final class CreateUserTask extends Task
     /**
      * @throws Throwable
      */
-    public function run(string $name, ?LanguageLevel $level = null): User
+    public function run(string $name): User
     {
         $user = new User();
         $user->name = $name;
-        $user->level = $level;
         $user->saveOrFail();
 
         return $user;

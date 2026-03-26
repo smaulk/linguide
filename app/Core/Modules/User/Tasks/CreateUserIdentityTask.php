@@ -37,8 +37,8 @@ final class CreateUserIdentityTask extends Task
     private function setEmailIdentity(UserIdentity $identity, EmailUserIdentityDto $dto): void
     {
         $identity->provider = UserProviderType::EMAIL;
-        $identity->email = Email::fromString($dto->email)->value;
-        $identity->password = Password::fromString($dto->password)->value;
+        $identity->email = Email::fromString($dto->email)->value();
+        $identity->password = Password::fromString($dto->password)->value();
     }
 
     private function setExternalIdentity(UserIdentity $identity, ExternalUserIdentityDto $dto): void
