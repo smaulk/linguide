@@ -63,6 +63,9 @@ RUN apk add --no-cache --virtual .build-deps \
 
 WORKDIR /var/www/html
 
+#Копируем Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 # Копируем vendor
 COPY --from=vendor /app/vendor ./vendor
 
