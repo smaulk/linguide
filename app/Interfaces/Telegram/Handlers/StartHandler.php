@@ -21,6 +21,6 @@ final class StartHandler extends Handler
 
     private function getText(): string
     {
-        return 'Добро пожаловать! Linguide - ваш бот для изучения английского языка!';
+        return 'Добро пожаловать в Linguide - помощник для изучения английского языка!';
     }
 }
