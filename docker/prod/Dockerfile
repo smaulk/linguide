@@ -8,7 +8,8 @@ RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
-    --prefer-dist
+    --prefer-dist \
+    --no-scripts
 
 # ====================== STAGE 2: App ======================
 FROM php:8.4-fpm-alpine
@@ -79,6 +80,9 @@ COPY . .
 RUN mkdir -p storage/logs storage/framework/{sessions,views,cache} bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
+
+# Запускаем скрипты Laravel
+RUN composer dump-autoload --optimize --no-interaction
 
 EXPOSE 80
 
