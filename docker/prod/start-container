@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+# Если передана команда — просто запускаем её
+if [ $# -gt 0 ]; then
+    exec "$@"
+fi
+
+# Кешируем конфиг, роуты, вьюхи
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Запускаем nginx + php-fpm через supervisor
+exec /usr/bin/sИ upervisord -c /etc/supervisor/conf.d/supervisord.conf

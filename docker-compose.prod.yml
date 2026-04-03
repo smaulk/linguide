@@ -1,0 +1,99 @@
+services:
+  traefik:
+    image: traefik:v3
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+    networks:
+      - linguide
+    restart: unless-stopped
+
+  backend:
+    image: ghcr.io/smaulk/linguide:latest
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.linguide.rule=Host(`${APP_DOMAIN}`)"
+      - "traefik.http.routers.linguide.entrypoints=websecure"
+      - "traefik.http.routers.linguide.tls.certresolver=letsencrypt"
+      - "traefik.http.services.linguide.loadbalancer.server.port=80"
+    networks:
+      - linguide
+    restart: unless-stopped
+
+#  queue:
+#    image: ghcr.io/smaulk/linguide:latest
+#    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+#    env_file: .env
+#    depends_on:
+#      - backend
+#    networks:
+#      - linguide
+#    restart: unless-stopped
+#
+#  scheduler:
+#    image: ghcr.io/smaulk/linguide:latest
+#    command: ["php", "artisan", "schedule:work"]
+#    env_file: .env
+#    depends_on:
+#      - backend
+#    networks:
+#      - linguide
+#    restart: unless-stopped
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - linguide
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 10s
+      retries: 3
+      timeout: 5s
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - linguide
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 3
+      timeout: 5s
+
+networks:
+  linguide:
+    driver: bridge
+
+volumes:
+  letsencrypt:
+  postgres_data:
+  redis_data:
