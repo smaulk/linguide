@@ -8,7 +8,6 @@ RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
-    --no-progress \
     --prefer-dist
 
 # ====================== STAGE 2: App ======================
