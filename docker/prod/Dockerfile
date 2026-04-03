@@ -28,18 +28,21 @@ RUN apk add --no-cache --virtual .build-deps \
         libzip-dev \
         libxml2-dev \
         imagemagick-dev \
+        oniguruma-dev \
     && apk add --no-cache \
         tzdata \
         nginx \
         supervisor \
         libpq \
-        freetype \
-        libjpeg-turbo \
         libpng \
+        libjpeg-turbo \
+        freetype \
         icu-libs \
         libzip \
+        curl \
         libxml2 \
         imagemagick \
+        oniguruma \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
