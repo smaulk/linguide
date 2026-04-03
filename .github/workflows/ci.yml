@@ -48,3 +48,5 @@ jobs:
           tags: |
             ghcr.io/smaulk/linguide:latest
             ghcr.io/smaulk/linguide:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
