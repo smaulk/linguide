@@ -11,4 +11,4 @@ php artisan config:cache
 php artisan route:cache
 
 # Запускаем nginx + php-fpm через supervisor
-exec /usr/bin/sИ upervisord -c /etc/supervisor/conf.d/supervisord.conf
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
