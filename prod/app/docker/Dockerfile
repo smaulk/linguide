@@ -70,12 +70,12 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY --from=vendor /app/vendor ./vendor
 
 # Копируем конфиги
-COPY docker/prod/nginx.conf        /etc/nginx/http.d/default.conf
-COPY docker/prod/php-fpm.conf      /usr/local/etc/php-fpm.d/www.conf
-COPY docker/prod/php.ini           $PHP_INI_DIR/conf.d/10-php.ini
-COPY docker/prod/php-opcache.ini   $PHP_INI_DIR/conf.d/20-opcache.ini
-COPY docker/prod/supervisord.conf  /etc/supervisor/conf.d/supervisord.conf
-COPY docker/prod/start-container   /usr/local/bin/start-container
+COPY prod/app/docker/nginx.conf        /etc/nginx/http.d/default.conf
+COPY prod/app/docker/php-fpm.conf      /usr/local/etc/php-fpm.d/www.conf
+COPY prod/app/docker/php.ini           $PHP_INI_DIR/conf.d/10-php.ini
+COPY prod/app/docker/php-opcache.ini   $PHP_INI_DIR/conf.d/20-opcache.ini
+COPY prod/app/docker/supervisord.conf  /etc/supervisor/conf.d/supervisord.conf
+COPY prod/app/docker/start-container   /usr/local/bin/start-container
 
 RUN chmod +x /usr/local/bin/start-container \
     && mkdir -p /run/php /run/nginx

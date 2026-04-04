@@ -1,26 +1,4 @@
 services:
-  traefik:
-    image: traefik:v3
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - letsencrypt:/letsencrypt
-    networks:
-      - linguide
-    restart: unless-stopped
-
   backend:
     image: ghcr.io/smaulk/linguide:latest
     env_file: .env
@@ -37,27 +15,8 @@ services:
       - "traefik.http.services.linguide.loadbalancer.server.port=80"
     networks:
       - linguide
+      - proxy
     restart: unless-stopped
-
-#  queue:
-#    image: ghcr.io/smaulk/linguide:latest
-#    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
-#    env_file: .env
-#    depends_on:
-#      - backend
-#    networks:
-#      - linguide
-#    restart: unless-stopped
-#
-#  scheduler:
-#    image: ghcr.io/smaulk/linguide:latest
-#    command: ["php", "artisan", "schedule:work"]
-#    env_file: .env
-#    depends_on:
-#      - backend
-#    networks:
-#      - linguide
-#    restart: unless-stopped
 
   postgres:
     image: postgres:17-alpine
@@ -91,11 +50,32 @@ services:
       retries: 3
       timeout: 5s
 
+#  queue:
+#    image: ghcr.io/smaulk/linguide:latest
+#    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+#    env_file: .env
+#    depends_on:
+#      - backend
+#    networks:
+#      - linguide
+#    restart: unless-stopped
+#
+#  scheduler:
+#    image: ghcr.io/smaulk/linguide:latest
+#    command: ["php", "artisan", "schedule:work"]
+#    env_file: .env
+#    depends_on:
+#      - backend
+#    networks:
+#      - linguide
+#    restart: unless-stopped
+
 networks:
   linguide:
     driver: bridge
+  proxy:
+    external: true
 
 volumes:
-  letsencrypt:
   postgres_data:
   redis_data:

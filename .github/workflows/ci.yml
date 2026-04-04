@@ -46,7 +46,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: docker/prod/Dockerfile
+          file: prod/app/docker/Dockerfile
           push: true
           tags: |
             ghcr.io/smaulk/linguide:latest

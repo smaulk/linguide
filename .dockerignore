@@ -3,5 +3,7 @@
 node_modules
 vendor
 .env
-docker-compose.yml
 docker-compose.*
+docker
+prod/traefik
+prod/app/docker-compose.*
