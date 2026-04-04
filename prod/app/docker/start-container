@@ -6,7 +6,6 @@ if [ $# -gt 0 ]; then
     exec "$@"
 fi
 
-php artisan config:clear || true
 php artisan config:cache
 php artisan route:cache
 
