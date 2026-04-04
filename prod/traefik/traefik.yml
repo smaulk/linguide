@@ -18,5 +18,4 @@ certificatesResolvers:
   letsencrypt:
     acme:
       tlsChallenge: true
-      email: "${ACME_EMAIL}"
       storage: /letsencrypt/acme.json

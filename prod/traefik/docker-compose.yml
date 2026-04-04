@@ -4,6 +4,7 @@ services:
     container_name: traefik
     command:
       - "--configFile=/etc/traefik/traefik.yml"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
     ports:
       - "80:80"
       - "443:443"
