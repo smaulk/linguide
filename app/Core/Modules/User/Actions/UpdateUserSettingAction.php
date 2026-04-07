@@ -5,7 +5,7 @@ namespace App\Core\Modules\User\Actions;
 
 use App\Core\Common\Parents\Action;
 use App\Core\Modules\User\Dto\UserDto;
-use App\Core\Modules\User\Dto\UserSettingDto;
+use App\Core\Modules\User\Dto\UserSettingsDto;
 use App\Core\Modules\User\Models\User;
 use App\Core\Modules\User\Models\UserSetting;
 use Throwable;
@@ -15,13 +15,13 @@ final class UpdateUserSettingAction extends Action
     /**
      * @throws Throwable
      */
-    public function run(int $userId, UserSettingDto $dto): void
+    public function run(int $userId, UserSettingsDto $dto): void
     {
         $userSetting = $this->getUserSettingById($userId);
 
         $userSetting->level = $dto->level;
         $userSetting->utc_offset = $dto->utcOffset?->value();
-        $userSetting->words_repeat_limit = $dto->wordsRepeatLimit->value();
+        $userSetting->words_review_limit = $dto->wordsReviewLimit->value();
 
         $userSetting->saveOrFail();
     }

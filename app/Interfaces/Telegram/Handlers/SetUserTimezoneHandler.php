@@ -5,15 +5,19 @@ namespace App\Interfaces\Telegram\Handlers;
 
 use App\Core\Modules\User\Actions\UpdateUserSettingAction;
 use App\Core\Modules\User\Dto\UserDto;
-use App\Core\Modules\User\Dto\UserSettingDto;
+use App\Core\Modules\User\Dto\UserSettingsDto;
 use App\Core\Modules\User\Vo\UtcOffset;
+use App\Interfaces\Telegram\Classes\AppUserContext;
 use App\Interfaces\Telegram\Parents\Handler;
 use SergiX44\Nutgram\Nutgram;
 use Throwable;
 
 final class SetUserTimezoneHandler extends Handler
 {
-    public function __construct(private readonly UpdateUserSettingAction $updateAction){}
+    public function __construct(
+        private readonly AppUserContext $userContext,
+        private readonly UpdateUserSettingAction $updateAction
+    ){}
 
     /**
      * @throws Throwable
@@ -23,7 +27,7 @@ final class SetUserTimezoneHandler extends Handler
         $bot->answerCallbackQuery();
 
         $utcOffset = UtcOffset::fromInt($offset);
-        $appUser = $this->getAppUser($bot);
+        $appUser = $this->userContext->get($bot);
 
         $this->updateUserTimezone($appUser, $utcOffset);
 
@@ -35,10 +39,10 @@ final class SetUserTimezoneHandler extends Handler
      */
     private function updateUserTimezone(UserDto $appUser, UtcOffset $utcOffset): void
     {
-        $this->updateAction->run($appUser->id, new UserSettingDto(
+        $this->updateAction->run($appUser->id, new UserSettingsDto(
             level: $appUser->settings->level,
             utcOffset: $utcOffset,
-            wordsRepeatLimit: $appUser->settings->wordsRepeatLimit,
+            wordsReviewLimit: $appUser->settings->wordsReviewLimit,
         ));
     }
 

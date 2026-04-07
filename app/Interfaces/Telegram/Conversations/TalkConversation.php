@@ -8,6 +8,7 @@ use App\Core\Modules\Ai\Dto\AskConversationAiDto;
 use App\Core\Modules\AiConversation\Actions\CreateAiConversationAction;
 use App\Core\Modules\AiConversation\Dto\AiMessageDto;
 use App\Core\Modules\AiConversation\Enums\AiConversationMode;
+use App\Interfaces\Telegram\Classes\AppUserContext;
 use App\Interfaces\Telegram\Commands\AiTalkCommand;
 use App\Interfaces\Telegram\Keyboards\Reply\AiTalkReplyKeyboard;
 use App\Interfaces\Telegram\Keyboards\Reply\MainMenuReplyKeyboard;
@@ -24,6 +25,7 @@ final class TalkConversation extends Conversation
     public int $conversationId;
 
     public function __construct(
+        private readonly AppUserContext $userContext,
         private readonly CreateAiConversationAction $createConversationAction,
         private readonly AskConversationAiAction $askConversationAction,
         private readonly MarkdownSender $markdownSender,
@@ -37,7 +39,7 @@ final class TalkConversation extends Conversation
      */
     public function start(Nutgram $bot): void
     {
-        $appUser = $this->getAppUser($bot);
+        $appUser = $this->userContext->get($bot);
         $this->conversationId = $this->createAiConversation($appUser->id);
         $bot->sendMessage(
             text: 'Вы вошли в режим диалога с ИИ.',

@@ -26,7 +26,7 @@ final class SetTelegramWebhookCommand extends Command
                     : null,
             );
         } catch (Throwable $e) {
-            Log::error('Telegram webhook set failed: ' . $e->getMessage());
+            Log::error('Telegram webhook set failed.', ['exception' => $e]);
             $this->error('Failed to set Telegram webhook.');
 
             return self::FAILURE;

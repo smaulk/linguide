@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Providers;
 
-use App\Core\Modules\Words\Mappers\WordTranslationsDatasetMapper;
-use App\Infrastructure\Learning\Writers\Contracts\WordTranslationsWriterContract;
-use App\Infrastructure\Learning\Writers\JsonFilesystemWordTranslationsWriter;
+use App\Core\Modules\Dictionary\Mappers\WordTranslationsDatasetMapper;
+use App\Infrastructure\Modules\Dictionary\Contracts\WordTranslationsWriterContract;
+use App\Infrastructure\Modules\Dictionary\Writers\JsonFilesystemWordTranslationsWriter;
+use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
 
 class WriterServiceProvider extends ServiceProvider
 {

@@ -5,16 +5,19 @@ namespace App\Interfaces\Telegram\Handlers;
 
 use App\Core\Modules\User\Actions\UpdateUserSettingAction;
 use App\Core\Modules\User\Dto\UserDto;
-use App\Core\Modules\User\Dto\UserSettingDto;
+use App\Core\Modules\User\Dto\UserSettingsDto;
 use App\Core\Modules\User\Enums\LanguageLevel;
-use App\Interfaces\Telegram\Commands\BaseCommand;
+use App\Interfaces\Telegram\Classes\AppUserContext;
 use App\Interfaces\Telegram\Parents\Handler;
 use SergiX44\Nutgram\Nutgram;
 use Throwable;
 
 final class SetUserLevelHandler extends Handler
 {
-    public function __construct(private readonly UpdateUserSettingAction $updateAction){}
+    public function __construct(
+        private readonly AppUserContext $userContext,
+        private readonly UpdateUserSettingAction $updateAction
+    ){}
 
     /**
      * @throws Throwable
@@ -24,7 +27,7 @@ final class SetUserLevelHandler extends Handler
         $bot->answerCallbackQuery();
 
         $languageLevel = LanguageLevel::from($level);
-        $appUser = $this->getAppUser($bot);
+        $appUser = $this->userContext->get($bot);
 
         $this->updateUserLevel($appUser, $languageLevel);
 
@@ -36,10 +39,10 @@ final class SetUserLevelHandler extends Handler
      */
     private function updateUserLevel(UserDto $appUser, LanguageLevel $level): void
     {
-        $this->updateAction->run($appUser->id, new UserSettingDto(
+        $this->updateAction->run($appUser->id, new UserSettingsDto(
             level: $level,
             utcOffset: $appUser->settings->utcOffset,
-            wordsRepeatLimit: $appUser->settings->wordsRepeatLimit,
+            wordsReviewLimit: $appUser->settings->wordsReviewLimit,
         ));
     }
 

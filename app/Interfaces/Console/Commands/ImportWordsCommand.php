@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Console\Commands;
 
-use App\Core\Modules\Words\Actions\ImportWordsAction;
+use App\Core\Modules\Dictionary\Actions\ImportWordsAction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -30,13 +30,13 @@ final class ImportWordsCommand extends Command
         try {
             $importCount = $importAction->run($resourceName, $fresh);
         } catch (Throwable $e) {
-            Log::error('Error importing words from resource "' . $resourceName . '": ' . $e->getMessage());
+            Log::error('Error importing words from resource "' . $resourceName . '".', ['exception' => $e]);
             $this->error('Importing words from resource "' . $resourceName . '" failed');
 
             return self::FAILURE;
         }
 
-        $this->info("Imported: {$importCount}");
+        $this->info("Imported\nWords: {$importCount}");
 
         return self::SUCCESS;
     }

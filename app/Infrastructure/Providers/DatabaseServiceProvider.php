@@ -14,10 +14,11 @@ class DatabaseServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $paths = glob(app_path('Core/Modules/*/Data/Migrations/*'));
+        $paths = glob(app_path('Infrastructure/Modules/*/Data/Migrations/*'));
         if(!$paths) {
             return;
         }
+
         $this->loadMigrationsFrom($paths);
     }
 }

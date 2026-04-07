@@ -31,6 +31,6 @@ trait BaseEnum
             }
         }
 
-        throw new InvalidArgumentException("No enum case with name $name");
+        throw new InvalidArgumentException('No enum case with name ' . $name);
     }
 }

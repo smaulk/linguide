@@ -3,19 +3,19 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Providers;
 
-use App\Core\Modules\Words\Mappers\WordImportMapper;
-use App\Core\Modules\Words\Mappers\WordTranslationsDatasetMapper;
-use App\Infrastructure\Ai\Sources\Contracts\InstructionSourceContract;
-use App\Infrastructure\Ai\Sources\TxtFilesystemInstructionSource;
-use App\Infrastructure\Config\Sources\Contracts\ConfigSourceContract;
-use App\Infrastructure\Config\Sources\LaravelConfigSource;
-use App\Infrastructure\Learning\Sources\Contracts\WordTranslationsSourceContract;
-use App\Infrastructure\Learning\Sources\Contracts\WordSourceContract;
-use App\Infrastructure\Learning\Sources\CsvFilesystemWordSource;
-use App\Infrastructure\Learning\Sources\JsonFilesystemWordTranslationsSource;
+use App\Core\Modules\Dictionary\Mappers\WordImportMapper;
+use App\Core\Modules\Dictionary\Mappers\WordTranslationsDatasetMapper;
+use App\Infrastructure\Modules\Ai\Contracts\InstructionSourceContract;
+use App\Infrastructure\Modules\Ai\Sources\TxtFilesystemInstructionSource;
+use App\Infrastructure\Modules\Config\Contracts\ConfigSourceContract;
+use App\Infrastructure\Modules\Config\Sources\LaravelConfigSource;
+use App\Infrastructure\Modules\Dictionary\Contracts\WordSourceContract;
+use App\Infrastructure\Modules\Dictionary\Contracts\WordTranslationsSourceContract;
+use App\Infrastructure\Modules\Dictionary\Sources\CsvFilesystemWordSource;
+use App\Infrastructure\Modules\Dictionary\Sources\JsonFilesystemWordTranslationsSource;
+use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
 
 class SourceServiceProvider extends ServiceProvider
 {

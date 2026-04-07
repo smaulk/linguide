@@ -3,40 +3,31 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Middlewares;
 
-use App\Core\Modules\User\Actions\CheckUserOnboardingAction;
-use App\Core\Modules\User\Enums\UserOnboardingStatus;
-use App\Interfaces\Telegram\Handlers\SelectionUserLevelHandler;
-use App\Interfaces\Telegram\Handlers\SelectionUserTimezoneHandler;
+use App\Core\Modules\User\Actions\ResolveOnboardingStepAction;
+use App\Core\Modules\User\Enums\UserOnboardingStep;
+use App\Interfaces\Telegram\Classes\AppUserContext;
 use App\Interfaces\Telegram\Parents\TelegramMiddleware;
+use App\Interfaces\Telegram\Services\ProcessOnboardingService;
 use SergiX44\Nutgram\Nutgram;
 
 final class OnboardingUserTgMiddleware extends TelegramMiddleware
 {
     public function __construct(
-        private readonly CheckUserOnboardingAction $checkOnboardingAction,
-        private readonly SelectionUserLevelHandler $levelSelectionHandler,
-        private readonly SelectionUserTimezoneHandler $timezoneSelectionHandler,
+        private readonly ResolveOnboardingStepAction $resolveStepAction,
+        private readonly ProcessOnboardingService $processOnboardingService,
+        private readonly AppUserContext $userContext,
     ){}
 
     public function __invoke(Nutgram $bot, callable $next): void
     {
-        $appUser = $this->getAppUser($bot);
-        $onboardingStatus = $this->checkOnboardingAction->run($appUser->settings);
+        $appUser = $this->userContext->get($bot);
+        $step = $this->resolveStepAction->run($appUser->settings);
 
-        match ($onboardingStatus) {
-            UserOnboardingStatus::SELECT_LEVEL    => $this->startSelectLevel($bot),
-            UserOnboardingStatus::SELECT_TIMEZONE => $this->startSelectTimezone($bot),
-            default                               => $next($bot),
-        };
-    }
+        if ($step !== UserOnboardingStep::COMPLETED) {
+            $this->processOnboardingService->run($bot, $appUser);
+            return;
+        }
 
-    private function startSelectLevel(Nutgram $bot): void
-    {
-        ($this->levelSelectionHandler)($bot);
-    }
-
-    private function startSelectTimezone(Nutgram $bot): void
-    {
-        ($this->timezoneSelectionHandler)($bot);
+        $next($bot);
     }
 }

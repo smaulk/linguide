@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Console\Commands;
 
-use App\Core\Modules\Words\Actions\ExportWordTranslationsAction;
+use App\Core\Modules\Dictionary\Actions\ExportWordTranslationsAction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -22,7 +22,7 @@ final class ExportWordTranslationsCommand extends Command
         try {
             $exportedCount = $exportAction->run($resourceName);
         } catch (Throwable $e) {
-            Log::error('Error exporting words: ' . $e->getMessage());
+            Log::error('Error exporting words.', ['exception' => $e]);
             $this->error('Export words failed');
 
             return self::FAILURE;

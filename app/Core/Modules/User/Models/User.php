@@ -5,7 +5,8 @@ namespace App\Core\Modules\User\Models;
 
 use App\Core\Common\Parents\Model;
 use App\Core\Modules\AiConversation\Models\AiConversation;
-use App\Core\Modules\Words\Models\UserWordProgress;
+use App\Core\Modules\Dictionary\Models\UserWordProgress;
+use App\Core\Modules\User\Enums\UserStatus;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -18,6 +19,7 @@ use LogicException;
 /**
  * @property int $id
  * @property string $name
+ * @property UserStatus $status
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  * @property ?Carbon $deleted_at
@@ -30,6 +32,10 @@ use LogicException;
 final class User extends Model implements AuthenticatableContract
 {
     use Authenticatable, SoftDeletes;
+
+    protected $casts = [
+        'status' => UserStatus::class,
+    ];
 
     /**
      * @return HasOne<UserSetting, $this>
@@ -63,7 +69,9 @@ final class User extends Model implements AuthenticatableContract
         return $this->hasMany(UserWordProgress::class, 'user_id', 'id');
     }
 
-
+    /**
+     * @throws LogicException
+     */
     public function settingsOrFail(): UserSetting
     {
         $settings = $this->settings;

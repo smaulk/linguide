@@ -12,7 +12,7 @@ use Illuminate\Support\Carbon;
  * @property int $user_id
  * @property ?LanguageLevel $level
  * @property ?int $utc_offset
- * @property int $words_repeat_limit
+ * @property int $words_review_limit
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  *

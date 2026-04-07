@@ -6,15 +6,13 @@ namespace App\Core\Modules\User\Actions;
 use App\Core\Common\Parents\Action;
 use App\Core\Modules\User\Dto\RegisterUserDto;
 use App\Core\Modules\User\Dto\UserDto;
-use App\Core\Modules\User\Dto\UserSettingDto;
 use App\Core\Modules\User\Exceptions\InvalidUserDataException;
+use App\Core\Modules\User\Mappers\UserMapper;
 use App\Core\Modules\User\Tasks\CreateUserIdentityTask;
 use App\Core\Modules\User\Tasks\CreateUserSettingTask;
 use App\Core\Modules\User\Tasks\CreateUserTask;
-use App\Core\Modules\User\Vo\UtcOffset;
-use App\Core\Modules\User\Vo\WordsRepeatLimit;
-use Exception;
 use Illuminate\Support\Facades\DB;
+use LogicException;
 use Throwable;
 
 final class RegisterUserAction extends Action
@@ -23,16 +21,18 @@ final class RegisterUserAction extends Action
         private readonly CreateUserTask $createUserTask,
         private readonly CreateUserIdentityTask $createUserIdentityTask,
         private readonly CreateUserSettingTask $createUserSettingTask,
+        private readonly UserMapper $mapper,
     ){}
 
     /**
      * @throws Throwable
      * @throws InvalidUserDataException
+     * @throws LogicException
      */
     public function run(RegisterUserDto $dto): UserDto
     {
         $user = DB::transaction(function () use ($dto) {
-            $user = $this->createUserTask->run($dto->name);
+            $user = $this->createUserTask->run($dto->name, $dto->status);
             $settings = $this->createUserSettingTask->run($user->id);
             $this->createUserIdentityTask->run($user->id, $dto->identity);
 
@@ -41,19 +41,6 @@ final class RegisterUserAction extends Action
             return $user;
         });
 
-        $settings = $user->settingsOrFail();
-        $utcOffset = $settings->utc_offset !== null
-            ? UtcOffset::fromInt($settings->utc_offset)
-            : null;
-
-        return new UserDto(
-            id: $user->id,
-            name: $user->name,
-            settings: new UserSettingDto(
-                level: $settings->level,
-                utcOffset: $utcOffset,
-                wordsRepeatLimit: WordsRepeatLimit::fromInt($settings->words_repeat_limit),
-            ),
-        );
+        return $this->mapper->mapUserModelToDto($user);
     }
 }

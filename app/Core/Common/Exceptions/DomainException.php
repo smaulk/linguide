@@ -6,5 +6,5 @@ use DomainException as BaseDomainException;
 
 class DomainException extends BaseDomainException
 {
-
+    //
 }

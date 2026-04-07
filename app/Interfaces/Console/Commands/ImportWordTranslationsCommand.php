@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Console\Commands;
 
-use App\Core\Modules\Words\Actions\ImportWordTranslationsAction;
+use App\Core\Modules\Dictionary\Actions\ImportWordTranslationsAction;
+use App\Core\Modules\Dictionary\Dto\ImportWordTranslationsResultDto;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -30,17 +31,29 @@ final class ImportWordTranslationsCommand extends Command
         try {
             $importResult = $importAction->run($resourceName, $fresh);
         } catch (Throwable $e) {
-            Log::error('Error importing word translations from resource "' . $resourceName . '": ' . $e->getMessage());
+            Log::error(
+                'Error importing word translations from resource "' . $resourceName . '".',
+                ['exception' => $e]
+            );
             $this->error('Importing word translations from resource "' . $resourceName . '" failed');
 
             return self::FAILURE;
         }
 
-        $this->info("Words: {$importResult->words}");
-        $this->info("Translations: {$importResult->translations}");
-        $this->info("Examples: {$importResult->examples}");
-
+        $this->info($this->formatResult($importResult));
 
         return self::SUCCESS;
+    }
+
+    private function formatResult(ImportWordTranslationsResultDto $result): string
+    {
+        $lines = [
+            "Imported",
+            "Translations for words: {$result->words}",
+            "Translations: {$result->translations}",
+            "Examples: {$result->examples}",
+        ];
+
+        return implode("\n", $lines);
     }
 }

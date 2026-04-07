@@ -6,7 +6,7 @@ namespace App\Core\Modules\Ai\Factories;
 use App\Core\Modules\Ai\Contracts\AiDriverContract;
 use App\Core\Modules\Ai\Drivers\GeminiDriver;
 use App\Core\Modules\Ai\Enums\AiDriverType;
-use App\Infrastructure\Ai\Resolvers\AiDriverConfigResolver;
+use App\Infrastructure\Modules\Ai\Resolvers\AiDriverConfigResolver;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 

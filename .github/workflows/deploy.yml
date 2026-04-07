@@ -22,5 +22,5 @@ jobs:
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u smaulk --password-stdin
             docker compose pull backend
             docker compose up -d --remove-orphans
-            docker compose exec backend php artisan migrate --force
+            docker compose exec backend php artisan migrate --force --seed
             docker image prune -f

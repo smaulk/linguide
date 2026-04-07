@@ -6,7 +6,7 @@ namespace App\Core\Modules\Ai\Factories;
 use App\Core\Modules\Ai\Agents\AiAgent;
 use App\Core\Modules\Ai\Contracts\AiAgentContract;
 use App\Core\Modules\Ai\Enums\AiAgentType;
-use App\Infrastructure\Ai\Resolvers\AiAgentConfigResolver;
+use App\Infrastructure\Modules\Ai\Resolvers\AiAgentConfigResolver;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
 final readonly class AiAgentFactory

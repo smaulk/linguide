@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Providers;
 
 use App\Interfaces\Telegram\Contracts\TelegramMiddlewareContract;
+use App\Interfaces\Telegram\Middlewares\EnsureUserHasAccessTgMiddleware;
 use App\Interfaces\Telegram\Middlewares\OnboardingUserTgMiddleware;
 use App\Interfaces\Telegram\Middlewares\ResolveUserTgMiddleware;
 use Illuminate\Support\Facades\Log;
@@ -49,6 +50,7 @@ class TelegramServiceProvider extends ServiceProvider
     {
         return [
             ResolveUserTgMiddleware::class,
+            EnsureUserHasAccessTgMiddleware::class,
             OnboardingUserTgMiddleware::class,
         ];
     }

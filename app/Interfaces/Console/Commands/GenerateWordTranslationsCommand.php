@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Console\Commands;
 
-use App\Core\Modules\Words\Actions\GenerateWordTranslationsAction;
+use App\Core\Modules\Dictionary\Actions\GenerateWordTranslationsAction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -25,7 +25,7 @@ final class GenerateWordTranslationsCommand extends Command
         try {
             $generatedCount = $generateAction->run($resourceName, $isOnlyEmpty);
         } catch (Throwable $e) {
-            Log::error('Error generate word translations: ' . $e->getMessage());
+            Log::error('Error generate word translations.', ['exception' => $e]);
             $this->error('Generate word translations failed');
 
             return self::FAILURE;

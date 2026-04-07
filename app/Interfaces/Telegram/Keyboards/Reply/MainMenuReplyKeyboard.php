@@ -16,7 +16,7 @@ final class MainMenuReplyKeyboard extends ReplyKeyboard
         return [
             [
                 KeyboardButton::make(
-                    text: MainMenuCommand::REPEAT_WORDS->value,
+                    text: MainMenuCommand::REVIEW_WORDS->value,
                     style: ButtonStyle::SUCCESS,
                 ),
                 KeyboardButton::make(
@@ -25,6 +25,10 @@ final class MainMenuReplyKeyboard extends ReplyKeyboard
                 ),
             ],
             [
+                // KeyboardButton::make(
+                //     text: MainMenuCommand::STATISTICS->value,
+                //     style: ButtonStyle::PRIMARY,
+                // ),
                 KeyboardButton::make(
                     text: MainMenuCommand::SETTINGS->value,
                     style: ButtonStyle::PRIMARY,
