@@ -64,5 +64,5 @@ jobs:
         with:
           package-name: linguide
           package-type: container
-          min-versions-to-keep: 2 # оставляем 2 последних образа
+          min-versions-to-keep: 3 # оставляем 3 последних образа
           ignore-versions: '^latest$' # образ с тегом latest не трогаем
