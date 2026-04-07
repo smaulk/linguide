@@ -9,9 +9,13 @@ use App\Core\Modules\User\Models\User;
 
 final class ActivateUserAction extends Action
 {
-    public function run(int $userId): void
+    /**
+     * @param int $userId
+     * @return bool успешная активация
+     */
+    public function run(int $userId): bool
     {
-        User::query()
+        return (bool)User::query()
             ->where('id', $userId)
             ->update(['status' => UserStatus::ACTIVE]);
     }

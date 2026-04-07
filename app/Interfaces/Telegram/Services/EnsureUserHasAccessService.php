@@ -17,6 +17,9 @@ final class EnsureUserHasAccessService extends Service
         private readonly ActivateUserAction $activateUserAction,
     ){}
 
+    /**
+     * @return bool пропустить ли запрос дальше
+     */
     public function run(Nutgram $bot, UserDto $appUser): bool
     {
         return match ($appUser->status) {
@@ -28,26 +31,36 @@ final class EnsureUserHasAccessService extends Service
 
     private function handleInactive(Nutgram $bot, int $appUserId): bool
     {
+        // Если защита отключена, активируем и пропускаем дальше
         if (!$this->accessManager->isEnabledAccessControl()) {
-            $this->activateUserAction->run($appUserId);
-            return true;
+            return $this->activateUserAction->run($appUserId);
         }
 
-        if (!$this->isCorrectAccessCode($bot)) {
+        $message = $bot->message();
+        // Если пользователь не вввел верный код
+        if ($message === null
+            || $message->text === null
+            || !$this->isCorrectAccessCode($message->text)
+        ) {
             $bot->sendMessage('Доступ закрыт! Введите код активации.');
             return false;
         }
 
-        $this->activateUserAction->run($appUserId);
+        // Если пользователь ввел верный код, активируем его
+        if ($this->activateUserAction->run($appUserId)) {
+            $bot->sendMessage('Успешная активация!');
+        }
+        // Удаляем сообщение с кодом
+        $message->delete();
 
-        return true;
+        // Не пропускаем запрос дальше, т.к. пользователь вводил код
+        return false;
     }
 
-    private function isCorrectAccessCode(Nutgram $bot): bool
+    private function isCorrectAccessCode(string $message): bool
     {
-        $message = trim($bot->message()->text ?? '');
-
-        return $message !== '' && $this->accessManager->isCorrectAccessCode($message);
+        $text = trim($message);
+        return $text !== '' && $this->accessManager->isCorrectAccessCode($text);
     }
 
     private function handleBlocked(Nutgram $bot): false
