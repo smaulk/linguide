@@ -19,7 +19,12 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /opt/linguide
+            
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u smaulk --password-stdin
+            
+            export TAG=${{ github.event.workflow_run.head_sha }}
+            echo "Deploying tag: $TAG"
+
             docker compose pull backend
             docker compose up -d --remove-orphans
             docker compose exec backend php artisan migrate --force --seed

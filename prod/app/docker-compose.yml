@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ghcr.io/smaulk/linguide:latest
+    image: ghcr.io/smaulk/linguide:${TAG}
     env_file: .env
     depends_on:
       postgres:
