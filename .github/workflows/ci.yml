@@ -53,3 +53,16 @@ jobs:
             ghcr.io/smaulk/linguide:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: false # Отключаем provenance-аттестации, иначе каждый билд создаёт 2 лишних пакета без тега
+
+  cleanup:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old package versions
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: linguide
+          package-type: container
+          min-versions-to-keep: 1 # оставляем 1 образ после latest
+          ignore-versions: '^latest$'  # тег latest не трогаем
