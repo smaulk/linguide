@@ -55,7 +55,11 @@ final class ReviewWordsConversation extends Conversation
         $utcOffset = $appUser->settings->utcOffset;
 
         $sessionId = $this->getSessionId();
-
+        if ($sessionId === null) {
+            $bot->sendMessage('Произошла неожиданная ошибка.');
+            $this->end();
+            return;
+        }
 
         $wordProgress = $this->getWordProgress($sessionId, $utcOffset);
         if ($wordProgress === null) {
