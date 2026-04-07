@@ -22,8 +22,8 @@ jobs:
             
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u smaulk --password-stdin
             
-            export TAG=${{ github.event.workflow_run.head_sha }}
-            echo "Deploying tag: $TAG"
+            export IMAGE_TAG=${{ github.event.workflow_run.head_sha }}
+            echo "Deploying tag: $IMAGE_TAG"
 
             docker compose pull backend
             docker compose up -d --remove-orphans
