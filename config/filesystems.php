@@ -65,14 +65,9 @@ return [
             'root' => resource_path('ai/instructions'),
         ],
 
-        'words' => [
+        'dictionary' => [
             'driver' => 'local',
-            'root' => resource_path('learning/datasets/words'),
-        ],
-
-        'translations' => [
-            'driver' => 'local',
-            'root' => resource_path('learning/datasets/translations'),
+            'root' => resource_path('learning/dictionary'),
         ],
 
     ],

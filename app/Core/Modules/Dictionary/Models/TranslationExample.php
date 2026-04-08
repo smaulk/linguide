@@ -14,15 +14,19 @@ use Illuminate\Support\Carbon;
  * @property string $sentence_ru
  * @property ?Carbon $created_at
  *
- * @property-read WordTranslation $translation
+ * @property-read Translation $translation
  */
 final class TranslationExample extends Model
 {
+    const ?string UPDATED_AT = null;
+
+    protected $table = 'translation_examples';
+
     /**
-     * @return BelongsTo<WordTranslation, $this>
+     * @return BelongsTo<Translation, $this>
      */
     public function translation(): BelongsTo
     {
-        return $this->belongsTo(WordTranslation::class, 'translation_id', 'id');
+        return $this->belongsTo(Translation::class, 'translation_id', 'id');
     }
 }

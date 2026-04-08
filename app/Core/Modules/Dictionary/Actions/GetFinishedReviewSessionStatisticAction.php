@@ -5,9 +5,9 @@ namespace App\Core\Modules\Dictionary\Actions;
 
 use App\Core\Common\Parents\Action;
 use App\Core\Modules\Dictionary\Dto\ReviewSessionStatisticDto;
-use App\Core\Modules\Dictionary\Enums\WordReviewSessionStatus;
-use App\Core\Modules\Dictionary\Models\WordReviewSession;
-use App\Core\Modules\Dictionary\Models\WordReviewSessionItem;
+use App\Core\Modules\Dictionary\Enums\ReviewSessionStatus;
+use App\Core\Modules\Dictionary\Models\ReviewSession;
+use App\Core\Modules\Dictionary\Models\ReviewSessionItem;
 use App\Core\Modules\Dictionary\Vo\Duration;
 use Illuminate\Support\Collection;
 use LogicException;
@@ -17,30 +17,28 @@ final class GetFinishedReviewSessionStatisticAction extends Action
     public function run(int $sessionId): ReviewSessionStatisticDto
     {
         $session = $this->getSession($sessionId);
-        $words = $this->getSessionWords($session);
-        $responseTimes = $this->getWordsResponseTimes($words);
+        $items = $this->getSessionItems($session);
+        $responseTimes = $this->getResponseTimes($items);
 
         return new ReviewSessionStatisticDto(
             duration: $this->getSessionDuration($session),
-            wordsCount: $words->count(),
-            correctWordsCount: $words->sum(fn(WordReviewSessionItem $w) => $w->is_correct ? 1 : 0),
+            termsCount: $items->count(),
+            correctTermsCount: $items->sum(fn(ReviewSessionItem $i) => $i->is_correct ? 1 : 0),
             avgResponseTime: Duration::fromSeconds((int)$responseTimes->avg()),
             maxResponseTime: Duration::fromSeconds((int)$responseTimes->max()),
             minResponseTime: Duration::fromSeconds((int)$responseTimes->min()),
         );
     }
 
-    private function getSession(int $sessionId): WordReviewSession
+    private function getSession(int $sessionId): ReviewSession
     {
-        return WordReviewSession::query()
-            ->where('status', WordReviewSessionStatus::FINISHED)
-            ->with([
-                'items'
-            ])
+        return ReviewSession::query()
+            ->where('status', ReviewSessionStatus::FINISHED)
+            ->with(['items'])
             ->findOrFail($sessionId);
     }
 
-    private function getSessionDuration(WordReviewSession $session): Duration
+    private function getSessionDuration(ReviewSession $session): Duration
     {
         if ($session->finished_at === null) {
             throw new LogicException('Сессия должна иметь дату завершения.');
@@ -50,29 +48,29 @@ final class GetFinishedReviewSessionStatisticAction extends Action
     }
 
     /**
-     * @return Collection<int, WordReviewSessionItem>
+     * @return Collection<int, ReviewSessionItem>
      */
-    private function getSessionWords(WordReviewSession $session): Collection
+    private function getSessionItems(ReviewSession $session): Collection
     {
         if ($session->items->isEmpty()) {
-            throw new LogicException('Сессия должна содержать хотя бы 1 слово.');
+            throw new LogicException('Сессия не может быть пустой.');
         }
 
         return $session->items;
     }
 
     /**
-     * @param Collection<int, WordReviewSessionItem> $words
+     * @param Collection<int, ReviewSessionItem> $items
      * @return Collection<int, int>
      */
-    private function getWordsResponseTimes(Collection $words): Collection
+    private function getResponseTimes(Collection $items): Collection
     {
-        return $words->map(function (WordReviewSessionItem $word) {
-            if ($word->presented_at === null || $word->answered_at === null) {
-                throw new LogicException('Все слова в сессии должны иметь дату показа и ответа');
+        return $items->map(function (ReviewSessionItem $item) {
+            if ($item->presented_at === null || $item->answered_at === null) {
+                throw new LogicException('Все элементы сессии должны иметь дату показа и ответа');
             }
 
-            return (int)$word->presented_at->diffInSeconds($word->answered_at, true);
+            return (int)$item->presented_at->diffInSeconds($item->answered_at, true);
         });
     }
 }

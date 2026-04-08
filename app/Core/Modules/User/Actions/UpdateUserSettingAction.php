@@ -21,7 +21,7 @@ final class UpdateUserSettingAction extends Action
 
         $userSetting->level = $dto->level;
         $userSetting->utc_offset = $dto->utcOffset?->value();
-        $userSetting->words_review_limit = $dto->wordsReviewLimit->value();
+        $userSetting->review_limit = $dto->reviewLimit->value();
 
         $userSetting->saveOrFail();
     }

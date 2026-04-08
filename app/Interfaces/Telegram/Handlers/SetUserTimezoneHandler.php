@@ -42,7 +42,7 @@ final class SetUserTimezoneHandler extends Handler
         $this->updateAction->run($appUser->id, new UserSettingsDto(
             level: $appUser->settings->level,
             utcOffset: $utcOffset,
-            wordsReviewLimit: $appUser->settings->wordsReviewLimit,
+            reviewLimit: $appUser->settings->reviewLimit,
         ));
     }
 

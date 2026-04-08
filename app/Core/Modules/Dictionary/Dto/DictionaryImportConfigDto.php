@@ -8,7 +8,7 @@ use App\Core\Common\Parents\Dto;
 final readonly class DictionaryImportConfigDto extends Dto
 {
     public function __construct(
-        public string $wordsResource,
+        public string $termsResource,
         public ?string $translationsResource,
     ){}
 }

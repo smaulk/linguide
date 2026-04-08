@@ -6,13 +6,13 @@ namespace App\Core\Modules\User\Dto;
 use App\Core\Common\Parents\Dto;
 use App\Core\Modules\User\Enums\LanguageLevel;
 use App\Core\Modules\User\Vo\UtcOffset;
-use App\Core\Modules\User\Vo\WordsReviewLimit;
+use App\Core\Modules\User\Vo\ReviewLimit;
 
 final readonly class UserSettingsDto extends Dto
 {
     public function __construct(
         public ?LanguageLevel $level,
         public ?UtcOffset $utcOffset,
-        public WordsReviewLimit $wordsReviewLimit,
+        public ReviewLimit $reviewLimit,
     ){}
 }

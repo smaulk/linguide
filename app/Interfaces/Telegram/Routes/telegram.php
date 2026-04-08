@@ -3,22 +3,22 @@
 
 use App\Interfaces\Telegram\Commands\BaseCommand;
 use App\Interfaces\Telegram\Commands\MainMenuCommand;
-use App\Interfaces\Telegram\Conversations\ReviewWordsConversation;
+use App\Interfaces\Telegram\Conversations\ReviewConversation;
 use App\Interfaces\Telegram\Conversations\TalkConversation;
 use App\Interfaces\Telegram\Handlers\ExceptionHandler;
 use App\Interfaces\Telegram\Handlers\FallbackHandler;
 use App\Interfaces\Telegram\Handlers\ShowUserLevelHandler;
 use App\Interfaces\Telegram\Handlers\ShowUserTimezoneHandler;
-use App\Interfaces\Telegram\Handlers\ShowUserWordsReviewLimitHandler;
+use App\Interfaces\Telegram\Handlers\ShowUserReviewLimitHandler;
 use App\Interfaces\Telegram\Handlers\MainMenuHandler;
 use App\Interfaces\Telegram\Handlers\SettingsMenuHandler;
 use App\Interfaces\Telegram\Handlers\SetUserLevelHandler;
 use App\Interfaces\Telegram\Handlers\SetUserTimezoneHandler;
-use App\Interfaces\Telegram\Handlers\SetUserWordsReviewLimitHandler;
+use App\Interfaces\Telegram\Handlers\SetUserReviewLimitHandler;
 use App\Interfaces\Telegram\Handlers\StartHandler;
 use App\Interfaces\Telegram\Handlers\SelectionUserLevelHandler;
 use App\Interfaces\Telegram\Handlers\SelectionUserTimezoneHandler;
-use App\Interfaces\Telegram\Handlers\SelectionUserWordsReviewLimitHandler;
+use App\Interfaces\Telegram\Handlers\SelectionUserReviewLimitHandler;
 use \App\Interfaces\Telegram\Commands\SettingsMenuCommand;
 
 $bot->onException(ExceptionHandler::class);
@@ -32,7 +32,7 @@ $bot->onText(BaseCommand::MAIN_MENU->value, MainMenuHandler::class);
 // region Main menu
 $bot->onText(MainMenuCommand::SETTINGS->value, SettingsMenuHandler::class);
 $bot->onText(MainMenuCommand::START_TALK->value, TalkConversation::class);
-$bot->onText(MainMenuCommand::REVIEW_WORDS->value, ReviewWordsConversation::class);
+$bot->onText(MainMenuCommand::REVIEW->value, ReviewConversation::class);
 // endregion
 
 // region Settings menu
@@ -40,7 +40,7 @@ $bot->onText(MainMenuCommand::REVIEW_WORDS->value, ReviewWordsConversation::clas
 // SHOW
 $bot->onText(SettingsMenuCommand::LEVEL->value, ShowUserLevelHandler::class);
 $bot->onText(SettingsMenuCommand::TIMEZONE->value, ShowUserTimezoneHandler::class);
-$bot->onText(SettingsMenuCommand::WORDS_REVIEW_LIMIT->value, ShowUserWordsReviewLimitHandler::class);
+$bot->onText(SettingsMenuCommand::REVIEW_LIMIT->value, ShowUserReviewLimitHandler::class);
 
 // SELECT
 $bot->onCallbackQueryData(
@@ -52,8 +52,8 @@ $bot->onCallbackQueryData(
     SelectionUserTimezoneHandler::class
 );
 $bot->onCallbackQueryData(
-    SettingsMenuCommand::SELECT_WORDS_REVIEW_LIMIT_CALLBACK->value,
-    SelectionUserWordsReviewLimitHandler::class
+    SettingsMenuCommand::SELECT_REVIEW_LIMIT_CALLBACK->value,
+    SelectionUserReviewLimitHandler::class
 );
 
 // SET
@@ -66,8 +66,8 @@ $bot->onCallbackQueryData(
     SetUserTimezoneHandler::class,
 );
 $bot->onCallbackQueryData(
-    SettingsMenuCommand::SET_WORDS_REVIEW_LIMIT_CALLBACK->value . '{limit}',
-    SetUserWordsReviewLimitHandler::class,
+    SettingsMenuCommand::SET_REVIEW_LIMIT_CALLBACK->value . '{limit}',
+    SetUserReviewLimitHandler::class,
 );
 // endregion
 

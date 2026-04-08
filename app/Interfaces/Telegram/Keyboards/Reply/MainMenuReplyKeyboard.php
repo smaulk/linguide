@@ -16,7 +16,7 @@ final class MainMenuReplyKeyboard extends ReplyKeyboard
         return [
             [
                 KeyboardButton::make(
-                    text: MainMenuCommand::REVIEW_WORDS->value,
+                    text: MainMenuCommand::REVIEW->value,
                     style: ButtonStyle::SUCCESS,
                 ),
                 KeyboardButton::make(

@@ -2,7 +2,7 @@
 
 return [
     'resources' => [
-        'words'        => 'Oxford5kData',
+        'terms'        => 'terms',
         'translations' => 'translations',
     ],
 ];

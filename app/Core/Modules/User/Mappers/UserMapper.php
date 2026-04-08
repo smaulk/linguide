@@ -7,7 +7,7 @@ use App\Core\Modules\User\Dto\UserDto;
 use App\Core\Modules\User\Dto\UserSettingsDto;
 use App\Core\Modules\User\Models\User;
 use App\Core\Modules\User\Vo\UtcOffset;
-use App\Core\Modules\User\Vo\WordsReviewLimit;
+use App\Core\Modules\User\Vo\ReviewLimit;
 use LogicException;
 
 final class UserMapper
@@ -19,7 +19,7 @@ final class UserMapper
     {
         $settings = $user->settingsOrFail();
 
-        $wordsReviewLimit =  WordsReviewLimit::fromInt($settings->words_review_limit);
+        $reviewLimit = ReviewLimit::fromInt($settings->review_limit);
         $utcOffset = $settings->utc_offset !== null
             ? UtcOffset::fromInt($settings->utc_offset)
             : null;
@@ -31,7 +31,7 @@ final class UserMapper
             settings: new UserSettingsDto(
                 level: $settings->level,
                 utcOffset: $utcOffset,
-                wordsReviewLimit: $wordsReviewLimit,
+                reviewLimit: $reviewLimit,
             ),
         );
     }

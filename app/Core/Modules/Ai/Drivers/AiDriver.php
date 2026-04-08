@@ -8,14 +8,14 @@ use App\Core\Modules\Ai\Dto\AiRequestDto;
 use App\Core\Modules\Ai\Contracts\AiDriverContract;
 use App\Core\Modules\Ai\Dto\AiResponseDto;
 use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\Factory;
+use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 
 abstract class AiDriver implements AiDriverContract
 {
     public function __construct(
-        private readonly Factory $http,
+        private readonly HttpFactory $http,
         protected readonly AiDriverConfigDto $config,
     ){}
 

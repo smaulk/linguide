@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->unsignedTinyInteger('level')->nullable();
             $table->smallInteger('utc_offset')->nullable();
-            $table->unsignedInteger('words_review_limit');
+            $table->unsignedInteger('review_limit');
 
             $table->timestampsTz();
         });

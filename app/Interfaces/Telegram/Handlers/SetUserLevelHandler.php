@@ -42,7 +42,7 @@ final class SetUserLevelHandler extends Handler
         $this->updateAction->run($appUser->id, new UserSettingsDto(
             level: $level,
             utcOffset: $appUser->settings->utcOffset,
-            wordsReviewLimit: $appUser->settings->wordsReviewLimit,
+            reviewLimit: $appUser->settings->reviewLimit,
         ));
     }
 

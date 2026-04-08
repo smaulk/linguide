@@ -7,9 +7,9 @@ return [
     'drivers' => [
         'gemini' => [
             'base_url'    => 'https://generativelanguage.googleapis.com',
-            'api_key'     => env('GEMINI_API_KEY'),
             'api_version' => 'v1beta',
-            'model'       => 'gemini-2.5-flash-lite'
+            'api_key'     => env('GEMINI_API_KEY'),
+            'model'       => env('GEMINI_MODEL'),
         ],
     ],
 
@@ -23,9 +23,9 @@ return [
             'driver'        => 'gemini', // необязательное
         ],
 
-        'word_translator' => [
-            'name'          => 'Word Translator',
-            'instruction'   => 'word_translator',
+        'term_translator' => [
+            'name'          => 'Term Translator',
+            'instruction'   => 'term_translator',
         ],
 
     ],

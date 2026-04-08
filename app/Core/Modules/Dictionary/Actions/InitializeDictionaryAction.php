@@ -8,8 +8,8 @@ use App\Core\Modules\App\Tasks\GetAppMetadataTask;
 use App\Core\Modules\App\Tasks\SetAppMetadataTask;
 use App\Core\Modules\Dictionary\Dto\DictionaryImportConfigDto;
 use App\Core\Modules\Dictionary\Dto\InitializeDictionaryResultDto;
-use App\Core\Modules\Dictionary\SubActions\ImportWordsSubAction;
-use App\Core\Modules\Dictionary\SubActions\ImportWordTranslationsSubAction;
+use App\Core\Modules\Dictionary\SubActions\ImportTermsSubAction;
+use App\Core\Modules\Dictionary\SubActions\ImportTranslationsSubAction;
 use App\Infrastructure\Common\Exceptions\MissingResourceException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -20,8 +20,8 @@ final class InitializeDictionaryAction extends Action
     private const string TRUE         = '1';
 
     public function __construct(
-        private readonly ImportWordsSubAction $importWordsSubAction,
-        private readonly ImportWordTranslationsSubAction $importTranslationsSubAction,
+        private readonly ImportTermsSubAction $importTermsSubAction,
+        private readonly ImportTranslationsSubAction $importTranslationsSubAction,
         private readonly GetAppMetadataTask $getMetadataTask,
         private readonly SetAppMetadataTask $setMetadataTask,
     ){}
@@ -39,7 +39,7 @@ final class InitializeDictionaryAction extends Action
         return DB::transaction(function () use ($dto) {
             $this->truncateDictionary();
 
-            $importWordsCount = $this->importWordsSubAction->run($dto->wordsResource);
+            $importTermsResult = $this->importTermsSubAction->run($dto->termsResource);
             $importTranslationsResult = $dto->translationsResource !== null
                 ? $this->importTranslationsSubAction->run($dto->translationsResource)
                 : null;
@@ -47,7 +47,7 @@ final class InitializeDictionaryAction extends Action
             $this->markAsInitialized();
 
             return new InitializeDictionaryResultDto(
-                wordsCount: $importWordsCount,
+                termsResult: $importTermsResult,
                 translationsResult: $importTranslationsResult,
             );
         });
@@ -65,6 +65,6 @@ final class InitializeDictionaryAction extends Action
 
     private function truncateDictionary(): void
     {
-        DB::statement('TRUNCATE words RESTART IDENTITY CASCADE');
+        DB::statement('TRUNCATE terms RESTART IDENTITY CASCADE');
     }
 }

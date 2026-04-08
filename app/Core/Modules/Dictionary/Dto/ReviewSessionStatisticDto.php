@@ -10,8 +10,8 @@ final readonly class ReviewSessionStatisticDto extends Dto
 {
     public function __construct(
         public Duration $duration,
-        public int $wordsCount,
-        public int $correctWordsCount,
+        public int $termsCount,
+        public int $correctTermsCount,
         public Duration $avgResponseTime,
         public Duration $maxResponseTime,
         public Duration $minResponseTime,

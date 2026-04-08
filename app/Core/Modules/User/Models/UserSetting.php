@@ -12,7 +12,7 @@ use Illuminate\Support\Carbon;
  * @property int $user_id
  * @property ?LanguageLevel $level
  * @property ?int $utc_offset
- * @property int $words_review_limit
+ * @property int $review_limit
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  *
@@ -20,7 +20,7 @@ use Illuminate\Support\Carbon;
  */
 final class UserSetting extends Model
 {
-    public const int WORD_REPEAT_LIMIT_DEFAULT = 7;
+    public const int REVIEW_LIMIT_DEFAULT = 7;
 
     protected $primaryKey = 'user_id';
     public $incrementing = false;

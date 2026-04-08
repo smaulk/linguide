@@ -5,7 +5,7 @@ namespace App\Core\Modules\User\Models;
 
 use App\Core\Common\Parents\Model;
 use App\Core\Modules\AiConversation\Models\AiConversation;
-use App\Core\Modules\Dictionary\Models\UserWordProgress;
+use App\Core\Modules\Dictionary\Models\LearningProgress;
 use App\Core\Modules\User\Enums\UserStatus;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,7 +27,7 @@ use LogicException;
  * @property-read ?UserSetting $settings
  * @property-read Collection<int, UserIdentity> $identities
  * @property-read Collection<int, AiConversation> $aiConversations
- * @property-read Collection<int, UserWordProgress> $wordProgress
+ * @property-read Collection<int, LearningProgress> $learningProgress
  */
 final class User extends Model implements AuthenticatableContract
 {
@@ -62,11 +62,11 @@ final class User extends Model implements AuthenticatableContract
     }
 
     /**
-     * @return HasMany<UserWordProgress, $this>
+     * @return HasMany<LearningProgress, $this>
      */
-    public function wordProgress(): HasMany
+    public function learningProgress(): HasMany
     {
-        return $this->hasMany(UserWordProgress::class, 'user_id', 'id');
+        return $this->hasMany(LearningProgress::class, 'user_id', 'id');
     }
 
     /**

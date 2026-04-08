@@ -9,6 +9,8 @@ enum PartOfSpeech: string
 {
     use BaseEnum;
 
+    case UNKNOWN      = 'unknown';
+
     case NOUN         = 'noun';
     case VERB         = 'verb';
     case ADJECTIVE    = 'adjective';
@@ -16,13 +18,12 @@ enum PartOfSpeech: string
     case PRONOUN      = 'pronoun';
     case PREPOSITION  = 'preposition';
     case CONJUNCTION  = 'conjunction';
-    case DETERMINER   = 'determiner';
-    case INTERJECTION = 'interjection';
     case NUMBER       = 'number';
 
     public function ru(): string
     {
         return match ($this) {
+            self::UNKNOWN      => 'неизвестно',
             self::NOUN         => 'существительное',
             self::VERB         => 'глагол',
             self::ADJECTIVE    => 'прилагательное',
@@ -30,8 +31,6 @@ enum PartOfSpeech: string
             self::PRONOUN      => 'местоимение',
             self::PREPOSITION  => 'предлог',
             self::CONJUNCTION  => 'союз',
-            self::DETERMINER   => 'определитель',
-            self::INTERJECTION => 'междометие',
             self::NUMBER       => 'число',
         };
     }

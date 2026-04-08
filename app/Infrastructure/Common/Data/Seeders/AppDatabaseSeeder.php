@@ -13,7 +13,10 @@ final class AppDatabaseSeeder extends Seeder
     {
         $this->call($this->baseSeeders());
 
-        if(app()->environment('local', 'testing')) {
+        if(app()->isProduction()) {
+            $this->call($this->prodSeeders());
+        }
+        else if(app()->environment('local', 'testing')) {
             $this->call($this->devSeeders());
         }
     }
@@ -25,6 +28,15 @@ final class AppDatabaseSeeder extends Seeder
     {
         return [
             DictionarySeeder::class,
+        ];
+    }
+
+    /**
+     * @return list<class-string<Seeder>>
+     */
+    private function prodSeeders(): array
+    {
+        return [
             MetadataSeeder::class,
         ];
     }

@@ -28,7 +28,7 @@ final class SettingsMenuReplyKeyboard extends ReplyKeyboard
             ],
             [
                 KeyboardButton::make(
-                    text: SettingsMenuCommand::WORDS_REVIEW_LIMIT->value,
+                    text: SettingsMenuCommand::REVIEW_LIMIT->value,
                     style: ButtonStyle::SUCCESS,
                 ),
             ],

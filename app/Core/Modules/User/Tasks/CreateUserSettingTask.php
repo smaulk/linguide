@@ -17,12 +17,12 @@ final class CreateUserSettingTask extends Task
     {
         $userSetting = new UserSetting();
         $userSetting->user_id = $userId;
-        $userSetting->words_review_limit = UserSetting::WORD_REPEAT_LIMIT_DEFAULT;
+        $userSetting->review_limit = UserSetting::REVIEW_LIMIT_DEFAULT;
 
         if ($settingDto !== null) {
             $userSetting->level = $settingDto->level;
             $userSetting->utc_offset = $settingDto->utcOffset?->value();
-            $userSetting->words_review_limit = $settingDto->wordsReviewLimit->value();
+            $userSetting->review_limit = $settingDto->reviewLimit->value();
         }
 
         $userSetting->saveOrFail();

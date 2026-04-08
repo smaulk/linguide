@@ -18,7 +18,7 @@ final class DictionarySeeder extends Seeder
     public function run(DictionaryConfigResolver $configResolver, InitializeDictionaryAction $action): void
     {
         $config = $configResolver->resolve();
-        if($config === null) {
+        if ($config === null) {
             return;
         }
 
@@ -30,7 +30,7 @@ final class DictionarySeeder extends Seeder
             return;
         }
 
-        if($result === null) {
+        if ($result === null) {
             return;
         }
 
@@ -41,11 +41,12 @@ final class DictionarySeeder extends Seeder
     {
         $lines = [
             'Imported',
-            "Words: {$result->wordsCount}",
+            "Terms: {$result->termsResult->terms}",
+            "Variants: {$result->termsResult->variants}",
         ];
 
         if ($result->translationsResult !== null) {
-            $lines[] = "Translations for words: {$result->translationsResult->words}";
+            $lines[] = "Translations for term variants: {$result->translationsResult->variants}";
             $lines[] = "Translations: {$result->translationsResult->translations}";
             $lines[] = "Examples: {$result->translationsResult->examples}";
         }

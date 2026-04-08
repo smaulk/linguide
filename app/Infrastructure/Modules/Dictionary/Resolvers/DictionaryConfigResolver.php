@@ -21,14 +21,14 @@ final class DictionaryConfigResolver extends Resolver
             return null;
         }
 
-        $wordsResource = $config->nullableString('words');
-        if ($wordsResource === null) {
+        $termsResource = $config->nullableString('terms');
+        if ($termsResource === null) {
             return null;
         }
 
         try {
             return new DictionaryImportConfigDto(
-                wordsResource: $wordsResource,
+                termsResource: $termsResource,
                 translationsResource: $config->nullableString('translations'),
             );
         } catch (Throwable $e) {
