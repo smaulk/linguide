@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Classes;
 
-use App\Core\Modules\Dictionary\Dto\ReviewSessionStatisticDto;
-use App\Core\Modules\Dictionary\Dto\TermVariantDto;
-use App\Core\Modules\Dictionary\Dto\LearningProgressDto;
-use App\Core\Modules\Dictionary\Enums\TermType;
+use App\Core\Modules\Term\Dto\ReviewSessionStatisticDto;
+use App\Core\Modules\Term\Dto\TermVariantDto;
+use App\Core\Modules\Term\Dto\LearningProgressDto;
+use App\Core\Modules\Term\Enums\TermType;
 use App\Interfaces\Telegram\Response\Markdown\Render\MarkdownEscaper;
 
 final class ReviewPresenter
@@ -15,7 +15,7 @@ final class ReviewPresenter
     {
         $termVariant = $learningProgress->termVariant;
         $lastReview = MarkdownEscaper::escape(
-            $learningProgress->last_reviewed_at?->format('d.m.Y H:i') ?? '—'
+            $learningProgress->last_reviewed_at?->format('d.m.Y H:i') ?? 'новое'
         );
 
         $posText = $termVariant->type === TermType::WORD ? "\n_\({$termVariant->pos->ru()}\)_" : '';

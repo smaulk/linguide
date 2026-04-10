@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Console\Commands;
 
-use App\Core\Modules\Dictionary\Actions\ExportTranslationsAction;
+use App\Core\Modules\Term\Actions\ExportTranslationsAction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;

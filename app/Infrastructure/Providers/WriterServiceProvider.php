@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Providers;
 
-use App\Core\Modules\Dictionary\Mappers\TranslationsDatasetMapper;
-use App\Infrastructure\Modules\Dictionary\Contracts\TranslationsWriterContract;
-use App\Infrastructure\Modules\Dictionary\Writers\JsonFilesystemTranslationsWriter;
+use App\Core\Modules\Term\Mappers\TranslationsDatasetMapper;
+use App\Infrastructure\Modules\Term\Contracts\TranslationsWriterContract;
+use App\Infrastructure\Modules\Term\Writers\JsonFilesystemTranslationsWriter;
 use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;

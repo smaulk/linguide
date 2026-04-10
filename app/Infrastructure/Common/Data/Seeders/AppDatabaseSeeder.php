@@ -5,7 +5,7 @@ namespace App\Infrastructure\Common\Data\Seeders;
 
 use App\Infrastructure\Common\Parents\Seeder;
 use App\Infrastructure\Modules\App\Data\Seeders\MetadataSeeder;
-use App\Infrastructure\Modules\Dictionary\Data\Seeders\DictionarySeeder;
+use App\Infrastructure\Modules\Term\Data\Seeders\DictionarySeeder;
 
 final class AppDatabaseSeeder extends Seeder
 {

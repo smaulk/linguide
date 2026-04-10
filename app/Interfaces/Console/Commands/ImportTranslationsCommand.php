@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Console\Commands;
 
-use App\Core\Modules\Dictionary\Actions\ImportTranslationsAction;
-use App\Core\Modules\Dictionary\Dto\ImportTranslationsResultDto;
+use App\Core\Modules\Term\Actions\ImportTranslationsAction;
+use App\Core\Modules\Term\Dto\ImportTranslationsResultDto;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;
