@@ -32,6 +32,9 @@ final class ReviewPresenter
         return implode("\n", $rows);
     }
 
+    /**
+     * @return string[]
+     */
     private function buildTermReviewInfo(LearningProgressDto $learningProgress): array
     {
         if ($learningProgress->last_reviewed_at === null) {
