@@ -13,19 +13,39 @@ final class ReviewPresenter
 {
     public function term(LearningProgressDto $learningProgress): string
     {
-        $termVariant = $learningProgress->termVariant;
+        $term = $learningProgress->termVariant;
+
+        $rows = [
+            "__*{$term->text}*__",
+        ];
+
+        if ($term->type === TermType::WORD) {
+            $rows[] = "_\({$term->pos->ru()}\)_";
+        }
+
+        $rows = [
+            ...$rows,
+            '',
+            ...$this->buildTermReviewInfo($learningProgress),
+        ];
+
+        return implode("\n", $rows);
+    }
+
+    private function buildTermReviewInfo(LearningProgressDto $learningProgress): array
+    {
+        if ($learningProgress->last_reviewed_at === null) {
+            return ['Новое\\!'];
+        }
+
         $lastReview = MarkdownEscaper::escape(
-            $learningProgress->last_reviewed_at?->format('d.m.Y H:i') ?? 'новое'
+            $learningProgress->last_reviewed_at->format('d.m.Y H:i')
         );
 
-        $posText = $termVariant->type === TermType::WORD ? "\n_\({$termVariant->pos->ru()}\)_" : '';
-
-        return <<<TEXT
-__*{$termVariant->text}*__$posText
- 
-Повторяли: {$lastReview}
-Серия подряд: {$learningProgress->repetitions}
-TEXT;
+        return [
+            "Повторяли: " . $lastReview,
+            "Серия подряд: " . $learningProgress->repetitions,
+        ];
     }
 
     public function answer(TermVariantDto $termVariant, bool $correct): string
