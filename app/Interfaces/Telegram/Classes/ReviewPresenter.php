@@ -6,6 +6,7 @@ namespace App\Interfaces\Telegram\Classes;
 use App\Core\Modules\Term\Dto\ReviewSessionStatisticDto;
 use App\Core\Modules\Term\Dto\TermVariantDto;
 use App\Core\Modules\Term\Dto\LearningProgressDto;
+use App\Core\Modules\Term\Dto\TranslationExampleDto;
 use App\Core\Modules\Term\Enums\TermType;
 use App\Interfaces\Telegram\Response\Markdown\Render\MarkdownEscaper;
 
@@ -37,12 +38,12 @@ final class ReviewPresenter
      */
     private function buildTermReviewInfo(LearningProgressDto $learningProgress): array
     {
-        if ($learningProgress->last_reviewed_at === null) {
+        if ($learningProgress->lastReviewedAt === null) {
             return ['Новое\\!'];
         }
 
         $lastReview = MarkdownEscaper::escape(
-            $learningProgress->last_reviewed_at->format('d.m.Y H:i')
+            $learningProgress->lastReviewedAt->format('d.m.Y H:i')
         );
 
         return [
@@ -68,7 +69,7 @@ final class ReviewPresenter
 
         foreach (array_values($termVariant->translations) as $index => $translation) {
             $num = $index + 1;
-            $translations[] = "{$num}. {$translation->text}  ({$translation->context_ru})";
+            $translations[] = "{$num}. {$translation->text}  ({$translation->contextRu})";
 
             $example = $translation->examples[0] ?? null;
             if ($example !== null) {
@@ -79,8 +80,9 @@ final class ReviewPresenter
         $lines[] = "Перевод:\n" . implode("\n", $translations);
         $lines[] = 'Примеры:';
 
+        /** @var TranslationExampleDto $example */
         foreach ($examples as [$num, $example]) {
-            $lines[] = "{$num}: {$example->sentence_en} ({$example->sentence_ru})";
+            $lines[] = "{$num}: {$example->sentenceEn} ({$example->sentenceRu})";
         }
 
         return implode("\n", $lines);

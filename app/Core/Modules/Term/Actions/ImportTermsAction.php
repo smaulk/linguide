@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Core\Modules\Term\Actions;
 
 use App\Core\Common\Parents\Action;
-use App\Core\Modules\Term\Dto\ImportTermsResultDto;
+use App\Core\Modules\Term\Dto\StoreTermsResultDto;
 use App\Core\Modules\Term\SubActions\ImportTermsSubAction;
 use App\Infrastructure\Common\Exceptions\MissingResourceException;
 use Illuminate\Support\Facades\DB;
@@ -17,11 +17,11 @@ final class ImportTermsAction extends Action
     /**
      * @param string $resourceName имя ресурса
      * @param bool $fresh очистить таблицу терминов
-     * @return ImportTermsResultDto
+     * @return StoreTermsResultDto
      * @throws Throwable
      * @throws MissingResourceException
      */
-    public function run(string $resourceName, bool $fresh = false): ImportTermsResultDto
+    public function run(string $resourceName, bool $fresh = false): StoreTermsResultDto
     {
         if ($fresh) {
             $this->truncateTable();

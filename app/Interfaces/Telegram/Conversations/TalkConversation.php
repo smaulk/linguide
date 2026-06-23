@@ -45,7 +45,8 @@ final class TalkConversation extends Conversation
             text: 'Вы вошли в режим диалога с ИИ.',
             reply_markup: $this->talkKeyboard->make(),
         );
-        $this->next('sendMessageAi');
+        $this->setSkipHandlers(true)
+            ->next('sendMessageAi');
     }
 
     /**

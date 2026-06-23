@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Modules\Term\Writers;
 
-use App\Core\Modules\Term\Dto\TermTranslationDatasetDto;
-use App\Core\Modules\Term\Mappers\TranslationsDatasetMapper;
+use App\Core\Modules\Term\Dto\StoreTranslationTermDto;
+use App\Core\Modules\Term\Mappers\StoreTranslationMapper;
 use App\Infrastructure\Modules\Term\Contracts\TranslationsWriterContract;
 use Illuminate\Contracts\Filesystem\Filesystem;
 
@@ -12,7 +12,7 @@ final readonly class JsonFilesystemTranslationsWriter implements TranslationsWri
 {
     public function __construct(
         private Filesystem $fs,
-        private TranslationsDatasetMapper $mapper,
+        private StoreTranslationMapper $mapper,
     ){}
 
     public function write(string $resourceName, array $terms): void
@@ -31,7 +31,7 @@ final readonly class JsonFilesystemTranslationsWriter implements TranslationsWri
         $this->fs->append($fileName, $json);
     }
 
-    private function getJson(TermTranslationDatasetDto $term): false|string
+    private function getJson(StoreTranslationTermDto $term): false|string
     {
         return json_encode(
             $this->mapper->mapDtoToRaw($term),

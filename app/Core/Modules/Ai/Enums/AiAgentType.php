@@ -5,6 +5,7 @@ namespace App\Core\Modules\Ai\Enums;
 
 enum AiAgentType: string
 {
-    case ENGLISH_TALK    = 'english_talk'; // Агент для общих разговоров по английскому
-    case TERM_TRANSLATOR = 'term_translator'; // Агент для перевода терминов
+    case ENGLISH_TALK        = 'english_talk'; // Агент для общих разговоров по английскому
+    case TERM_TRANSLATOR     = 'term_translator'; // Агент для перевода терминов
+    case CANDIDATE_VALIDATOR = 'candidate_validator'; // Агент для валидации кандидтов терминов
 }

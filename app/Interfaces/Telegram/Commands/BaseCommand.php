@@ -5,6 +5,6 @@ namespace App\Interfaces\Telegram\Commands;
 
 enum BaseCommand: string
 {
-    case START     = 'start';
-    case MAIN_MENU = '⬅️ В главное меню';
+    case START          = 'start';
+    case BACK_MAIN_MENU = '⬅️ В главное меню';
 }

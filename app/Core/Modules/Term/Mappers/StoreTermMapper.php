@@ -5,16 +5,16 @@ namespace App\Core\Modules\Term\Mappers;
 
 use App\Core\Modules\Term\Enums\TermType;
 use App\Core\Modules\User\Enums\LanguageLevel;
-use App\Core\Modules\Term\Dto\TermDatasetDto;
+use App\Core\Modules\Term\Dto\StoreTermDto;
 use App\Core\Modules\Term\Enums\PartOfSpeech;
 use UnexpectedValueException;
 
-final class TermDatasetMapper
+final class StoreTermMapper
 {
     /**
      * @param array<string, string|null> $raw
      */
-    public function mapRawToDto(array $raw): TermDatasetDto
+    public function mapRawToDto(array $raw, bool $isVerified): StoreTermDto
     {
         $prepared = $this->prepareRaw($raw);
 
@@ -22,11 +22,12 @@ final class TermDatasetMapper
             ? PartOfSpeech::from(strtolower($prepared['pos']))
             : PartOfSpeech::UNKNOWN;
 
-        return new TermDatasetDto(
+        return new StoreTermDto(
             text: strtolower($prepared['text']),
             type: TermType::from(strtolower($prepared['type'])),
-            level: LanguageLevel::fromName(strtoupper($prepared['level'])),
             pos: $pos,
+            level: LanguageLevel::fromName(strtoupper($prepared['level'])),
+            isVerified: $isVerified,
         );
     }
 

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Modules\Term\Sources;
 
-use App\Core\Modules\Term\Mappers\TermDatasetMapper;
+use App\Core\Modules\Term\Mappers\StoreTermMapper;
 use App\Infrastructure\Common\Concerns\ReadsFilesystemStream;
 use App\Infrastructure\Modules\Term\Contracts\TermsSourceContract;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -17,7 +17,7 @@ final readonly class CsvFilesystemTermsSource implements TermsSourceContract
 
     private const string DELIMITER = ',';
 
-    public function __construct(private Filesystem $fs, private TermDatasetMapper $mapper){}
+    public function __construct(private Filesystem $fs, private StoreTermMapper $mapper){}
 
     public function get(string $name): iterable
     {
@@ -40,8 +40,8 @@ final readonly class CsvFilesystemTermsSource implements TermsSourceContract
                 }
 
                 try {
-                    yield $this->mapper->mapRawToDto($raw);
-                } catch (ValueError $e) {
+                    yield $this->mapper->mapRawToDto($raw, true);
+                } catch (ValueError) {
                     continue;
                 } catch (Throwable $e) {
                     Log::warning('CsvFilesystemTermSource failed row mapping.',

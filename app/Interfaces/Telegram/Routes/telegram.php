@@ -3,6 +3,7 @@
 
 use App\Interfaces\Telegram\Commands\BaseCommand;
 use App\Interfaces\Telegram\Commands\MainMenuCommand;
+use App\Interfaces\Telegram\Conversations\AddTermsConversation;
 use App\Interfaces\Telegram\Conversations\ReviewConversation;
 use App\Interfaces\Telegram\Conversations\TalkConversation;
 use App\Interfaces\Telegram\Handlers\ExceptionHandler;
@@ -27,12 +28,13 @@ $bot->fallback(FallbackHandler::class);
 $bot->onCommand(BaseCommand::START->value, StartHandler::class)
     ->description('Start using the bot');
 
-$bot->onText(BaseCommand::MAIN_MENU->value, MainMenuHandler::class);
+$bot->onText(BaseCommand::BACK_MAIN_MENU->value, MainMenuHandler::class);
 
 // region Main menu
 $bot->onText(MainMenuCommand::SETTINGS->value, SettingsMenuHandler::class);
 $bot->onText(MainMenuCommand::START_TALK->value, TalkConversation::class);
 $bot->onText(MainMenuCommand::REVIEW->value, ReviewConversation::class);
+$bot->onText(MainMenuCommand::ADD_TERMS->value, AddTermsConversation::class);
 // endregion
 
 // region Settings menu

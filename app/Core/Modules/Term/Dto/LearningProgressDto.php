@@ -12,10 +12,10 @@ final readonly class LearningProgressDto extends Dto
         public int $id,
         public int $repetitions,
         public int $interval,
-        public float $ease_factor,
-        public Carbon $due_at,
-        public ?Carbon $last_reviewed_at,
-        public ?Carbon $created_at,
+        public float $easeFactor,
+        public Carbon $dueAt,
+        public ?Carbon $lastReviewedAt,
+        public ?Carbon $createdAt,
         public TermVariantDto $termVariant,
     ){}
 }

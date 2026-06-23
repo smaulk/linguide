@@ -7,15 +7,16 @@ use App\Core\Common\Parents\Dto;
 use App\Core\Modules\Term\Enums\PartOfSpeech;
 use App\Core\Modules\Term\Enums\TermType;
 
-final readonly class TermTranslationDatasetDto extends Dto
+final readonly class ValidatedCandidateDto extends Dto
 {
     /**
-     * @param TranslationDatasetDto[] $translations
+     * @param PartOfSpeech[]|null $pos
      */
     public function __construct(
-        public string $text,
-        public TermType $type,
-        public PartOfSpeech $pos,
-        public array $translations = [],
+        public string $term,
+        public bool $isValid,
+        public ?TermType $type,
+        public ?string $baseForm,
+        public ?array $pos,
     ){}
 }

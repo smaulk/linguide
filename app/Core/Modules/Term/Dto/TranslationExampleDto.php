@@ -9,7 +9,7 @@ final readonly class TranslationExampleDto extends Dto
 {
     public function __construct(
         public int $id,
-        public string $sentence_en,
-        public string $sentence_ru,
+        public string $sentenceEn,
+        public string $sentenceRu,
     ){}
 }

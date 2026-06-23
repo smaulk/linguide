@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace App\Core\Modules\Ai\Dto;
 
 use App\Core\Common\Parents\Dto;
-use App\Core\Modules\Ai\Enums\AiAgentType;
-use App\Core\Modules\Ai\Enums\AiDriverType;
 
 final readonly class AskConversationAiDto extends Dto
 {

@@ -25,7 +25,9 @@ jobs:
             export IMAGE_TAG=${{ github.event.workflow_run.head_sha }}
             echo "Deploying tag: $IMAGE_TAG"
 
-            docker compose pull backend
-            docker compose up -d --remove-orphans
+            docker compose stop queue
+            docker compose pull backend queue
+            docker compose up -d backend
             docker compose exec backend php artisan migrate --force --seed
+            docker compose up -d --remove-orphans
             docker image prune -f

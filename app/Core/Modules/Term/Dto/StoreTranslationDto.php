@@ -5,15 +5,15 @@ namespace App\Core\Modules\Term\Dto;
 
 use App\Core\Common\Parents\Dto;
 
-final readonly class TranslationDatasetDto extends Dto
+final readonly class StoreTranslationDto extends Dto
 {
     /**
-     * @param TranslationExampleDatasetDto[] $examples
+     * @param StoreTranslationExampleDto[] $examples
      */
     public function __construct(
         public string $text,
-        public string $context_en,
-        public string $context_ru,
+        public string $contextEn,
+        public string $contextRu,
         public array $examples = [],
     ){}
 }

@@ -41,14 +41,14 @@ final class DictionarySeeder extends Seeder
     {
         $lines = [
             'Imported',
-            "Terms: {$result->termsResult->terms}",
-            "Variants: {$result->termsResult->variants}",
+            "Terms: {$result->termsResult->termsCount}",
+            "Variants: {$result->termsResult->variantsCount}",
         ];
 
         if ($result->translationsResult !== null) {
-            $lines[] = "Translations for term variants: {$result->translationsResult->variants}";
-            $lines[] = "Translations: {$result->translationsResult->translations}";
-            $lines[] = "Examples: {$result->translationsResult->examples}";
+            $lines[] = "Translations for term variants: {$result->translationsResult->variantsCount}";
+            $lines[] = "Translations: {$result->translationsResult->translationsCount}";
+            $lines[] = "Examples: {$result->translationsResult->examplesCount}";
         }
 
         return implode("\n", $lines);

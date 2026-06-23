@@ -28,5 +28,9 @@ return [
             'instruction'   => 'term_translator',
         ],
 
+        'candidate_validator' => [
+            'name'          => 'Candidate Validator',
+            'instruction'   => 'candidate_validator',
+        ],
     ],
 ];

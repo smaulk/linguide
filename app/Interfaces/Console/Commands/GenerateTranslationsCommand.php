@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Console\Commands;
 
-use App\Core\Modules\Term\Actions\GenerateTranslationsAction;
+use App\Core\Modules\Term\Actions\GenerateAndWriteTranslationsAction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -16,7 +16,7 @@ final class GenerateTranslationsCommand extends Command
 
     protected $description = 'Generate term translations';
 
-    public function handle(GenerateTranslationsAction $generateAction): int
+    public function handle(GenerateAndWriteTranslationsAction $generateAction): int
     {
         $resourceName = $this->argument('resourceName');
         $isOnlyEmpty = $this->option('empty') === true;

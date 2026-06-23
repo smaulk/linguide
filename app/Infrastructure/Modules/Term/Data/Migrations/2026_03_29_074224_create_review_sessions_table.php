@@ -17,7 +17,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->enum('status', ReviewSessionStatus::values())
-                ->default(ReviewSessionStatus::ACTIVE->name);
+                ->default(ReviewSessionStatus::ACTIVE->value);
 
             $table->timestampTz('started_at');
             $table->timestampTz('finished_at')->nullable();

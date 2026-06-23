@@ -11,8 +11,8 @@ final class AiMessageMapper
     public function mapModelToDto(AiMessage $message): AiMessageDto
     {
         return new AiMessageDto(
-            role: $message->role,
             content: $message->content,
+            role: $message->role,
             tgMessageId: $message->telegram_message_id,
             meta: $message->meta,
         );

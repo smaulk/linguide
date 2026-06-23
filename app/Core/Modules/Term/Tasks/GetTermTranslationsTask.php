@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace App\Core\Modules\Term\Tasks;
 
 use App\Core\Common\Parents\Task;
-use App\Core\Modules\Term\Dto\TermTranslationDatasetDto;
-use App\Core\Modules\Term\Mappers\TranslationsDatasetMapper;
+use App\Core\Modules\Term\Dto\StoreTranslationTermDto;
+use App\Core\Modules\Term\Mappers\StoreTranslationMapper;
 use App\Core\Modules\Term\Models\TermVariant;
 use Illuminate\Support\LazyCollection;
 
@@ -13,10 +13,10 @@ final class GetTermTranslationsTask extends Task
 {
     private const int CHUNK_SIZE = 500;
 
-    public function __construct(private readonly TranslationsDatasetMapper $mapper){}
+    public function __construct(private readonly StoreTranslationMapper $mapper){}
 
     /**
-     * @return iterable<TermTranslationDatasetDto[]>
+     * @return iterable<StoreTranslationTermDto[]>
      */
     public function run(): iterable
     {

@@ -8,12 +8,13 @@ use App\Core\Modules\Term\Enums\TermType;
 use App\Core\Modules\User\Enums\LanguageLevel;
 use App\Core\Modules\Term\Enums\PartOfSpeech;
 
-final readonly class TermDatasetDto extends Dto
+final readonly class StoreTermDto extends Dto
 {
     public function __construct(
         public string $text,
         public TermType $type,
-        public LanguageLevel $level,
         public PartOfSpeech $pos,
+        public ?LanguageLevel $level = null,
+        public bool $isVerified = false,
     ){}
 }

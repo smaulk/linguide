@@ -7,6 +7,7 @@ enum MainMenuCommand: string
 {
     case START_TALK = '💬 Поговорить';
     case REVIEW     = '🔁 Повторение';
+    case ADD_TERMS  = '➕ Добавить термины';
     case STATISTICS = '📊 Статистика';
     case SETTINGS = '⚙️ Настройки';
 }

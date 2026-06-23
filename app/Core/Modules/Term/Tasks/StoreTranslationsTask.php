@@ -4,56 +4,46 @@ declare(strict_types=1);
 namespace App\Core\Modules\Term\Tasks;
 
 use App\Core\Common\Parents\Task;
-use App\Core\Modules\Term\Dto\ImportTranslationsResultDto;
-use App\Core\Modules\Term\Dto\TermTranslationDatasetDto;
+use App\Core\Modules\Term\Dto\StoreTranslationsResultDto;
+use App\Core\Modules\Term\Dto\StoreTranslationTermDto;
 use App\Core\Modules\Term\Models\TermVariant;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 use Throwable;
 
-final class ImportTranslationsTask extends Task
+final class StoreTranslationsTask extends Task
 {
     private const int BATCH_SIZE = 500;
 
     /**
-     * @param iterable<TermTranslationDatasetDto> $terms
-     * @return ImportTranslationsResultDto
+     * @param iterable<StoreTranslationTermDto> $terms
+     * @return StoreTranslationsResultDto
      * @throws Throwable
      */
-    public function run(iterable $terms): ImportTranslationsResultDto
+    public function run(iterable $terms): StoreTranslationsResultDto
     {
-        $buffer = [];
         $stats = ['variants' => 0, 'translations' => 0, 'examples' => 0];
 
-        foreach ($terms as $termDto) {
-            $buffer[] = $termDto;
-
-            if (count($buffer) >= self::BATCH_SIZE) {
-                $this->handleBatch($buffer, $stats);
-                $buffer = [];
-            }
+        foreach (chunk_iterable($terms, self::BATCH_SIZE) as $batch) {
+            $this->handleBatch($batch, $stats);
         }
 
-        if (!empty($buffer)) {
-            $this->handleBatch($buffer, $stats);
-        }
-
-        return new ImportTranslationsResultDto(
-            variants: $stats['variants'],
-            translations: $stats['translations'],
-            examples: $stats['examples'],
+        return new StoreTranslationsResultDto(
+            variantsCount: $stats['variants'],
+            translationsCount: $stats['translations'],
+            examplesCount: $stats['examples'],
         );
     }
 
     /**
-     * @param TermTranslationDatasetDto[] $buffer
+     * @param StoreTranslationTermDto[] $batch
      * @param array{"variants": int, "translations": int, "examples": int} $stats
      * @throws Throwable
      */
-    private function handleBatch(array $buffer, array &$stats): void
+    private function handleBatch(array $batch, array &$stats): void
     {
-        [$v, $t, $e] = DB::transaction(fn() => $this->processBatch($buffer));
+        [$v, $t, $e] = DB::transaction(fn() => $this->processBatch($batch));
 
         $stats['variants'] += $v;
         $stats['translations'] += $t;
@@ -61,7 +51,7 @@ final class ImportTranslationsTask extends Task
     }
 
     /**
-     * @param TermTranslationDatasetDto[] $dtoTerms
+     * @param StoreTranslationTermDto[] $dtoTerms
      * @return array{0:int,1:int,2:int}
      * @throws Throwable
      */
@@ -70,7 +60,7 @@ final class ImportTranslationsTask extends Task
         $variants = $this->loadVariants($dtoTerms);
 
         [$translationsRows, $translationsValues] =
-            $this->buildTranslationsData($variants, $dtoTerms);
+            $this->prepareTranslationsData($variants, $dtoTerms);
 
         if (empty($translationsRows)) {
             return [0, 0, 0];
@@ -84,7 +74,7 @@ final class ImportTranslationsTask extends Task
         $translationsMap = $this->buildTranslationsMap($translations);
 
         [$examplesRows, $examplesValues] =
-            $this->buildExamplesData($variants, $dtoTerms, $translationsMap);
+            $this->prepareExamplesData($variants, $dtoTerms, $translationsMap);
 
         if (!empty($examplesRows)) {
             DB::insert(
@@ -101,16 +91,16 @@ final class ImportTranslationsTask extends Task
     }
 
     /**
-     * @param TermTranslationDatasetDto[] $dtoTerms
+     * @param StoreTranslationTermDto[] $dtoTerms
      * @return Collection<string, TermVariant>
      */
     private function loadVariants(array $dtoTerms): Collection
     {
-        $termsText = array_map(fn(TermTranslationDatasetDto $dto) => $dto->text, $dtoTerms);
+        $termsText = array_map(fn(StoreTranslationTermDto $dto) => $dto->text, $dtoTerms);
 
         return TermVariant::query()
             ->select(['id', 'term_id', 'pos'])
-            ->whereHas('term', fn ($q) => $q->whereIn('text', $termsText))
+            ->whereHas('term', fn($q) => $q->whereIn('text', $termsText))
             ->with(['term:id,text'])
             ->get()
             ->keyBy(fn(TermVariant $variant) => $this->variantKey($variant->term->text, $variant->pos->value));
@@ -118,10 +108,10 @@ final class ImportTranslationsTask extends Task
 
     /**
      * @param Collection<string, TermVariant> $variants
-     * @param TermTranslationDatasetDto[] $dtoTerms
+     * @param StoreTranslationTermDto[] $dtoTerms
      * @return array{0: array<int, mixed>, 1: string[]}
      */
-    private function buildTranslationsData(Collection $variants, array $dtoTerms): array
+    private function prepareTranslationsData(Collection $variants, array $dtoTerms): array
     {
         $rows = [];
         $values = [];
@@ -135,8 +125,8 @@ final class ImportTranslationsTask extends Task
             foreach ($termDto->translations as $translationDto) {
                 $rows[] = $variant->id;
                 $rows[] = $translationDto->text;
-                $rows[] = $translationDto->context_en;
-                $rows[] = $translationDto->context_ru;
+                $rows[] = $translationDto->contextEn;
+                $rows[] = $translationDto->contextRu;
 
                 $values[] = '(?::integer, ?, ?, ?)';
             }
@@ -162,11 +152,11 @@ final class ImportTranslationsTask extends Task
 
     /**
      * @param Collection<string, TermVariant> $variants
-     * @param TermTranslationDatasetDto[] $dtoTerms
+     * @param StoreTranslationTermDto[] $dtoTerms
      * @param array<string, stdClass> $translationsMap
      * @return array{0: array<int, mixed>, 1: string[]}
      */
-    private function buildExamplesData(Collection $variants, array $dtoTerms, array $translationsMap): array
+    private function prepareExamplesData(Collection $variants, array $dtoTerms, array $translationsMap): array
     {
         $rows = [];
         $values = [];
@@ -178,7 +168,7 @@ final class ImportTranslationsTask extends Task
             }
 
             foreach ($termDto->translations as $translationDto) {
-                $key = $this->translationKey($variant->id, $translationDto->text, $translationDto->context_en);
+                $key = $this->translationKey($variant->id, $translationDto->text, $translationDto->contextEn);
                 $translation = $translationsMap[$key] ?? null;
                 if ($translation === null) {
                     continue;
@@ -186,8 +176,8 @@ final class ImportTranslationsTask extends Task
 
                 foreach ($translationDto->examples as $exampleDto) {
                     $rows[] = $translation->id;
-                    $rows[] = $exampleDto->sentence_en;
-                    $rows[] = $exampleDto->sentence_ru;
+                    $rows[] = $exampleDto->sentenceEn;
+                    $rows[] = $exampleDto->sentenceRu;
 
                     $values[] = '(?::integer, ?, ?)';
                 }

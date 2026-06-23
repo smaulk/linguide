@@ -15,8 +15,8 @@ final readonly class AiMessageDto extends Dto
      * @param array<string, mixed>|null $meta
      */
     public function __construct(
-        public AiMessageRole $role,
         public string $content,
+        public AiMessageRole $role = AiMessageRole::USER,
         public ?int $tgMessageId = null,
         public ?array $meta = null,
     ){}

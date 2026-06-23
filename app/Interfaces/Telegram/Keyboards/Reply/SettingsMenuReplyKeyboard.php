@@ -34,7 +34,7 @@ final class SettingsMenuReplyKeyboard extends ReplyKeyboard
             ],
             [
                 KeyboardButton::make(
-                    text: BaseCommand::MAIN_MENU->value,
+                    text: BaseCommand::BACK_MAIN_MENU->value,
                     style: ButtonStyle::PRIMARY,
                 ),
             ]

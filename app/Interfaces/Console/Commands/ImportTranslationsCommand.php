@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Interfaces\Console\Commands;
 
 use App\Core\Modules\Term\Actions\ImportTranslationsAction;
-use App\Core\Modules\Term\Dto\ImportTranslationsResultDto;
+use App\Core\Modules\Term\Dto\StoreTranslationsResultDto;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -45,13 +45,13 @@ final class ImportTranslationsCommand extends Command
         return self::SUCCESS;
     }
 
-    private function formatResult(ImportTranslationsResultDto $result): string
+    private function formatResult(StoreTranslationsResultDto $result): string
     {
         $lines = [
             "Imported",
-            "Translations for term variants: {$result->variants}",
-            "Translations: {$result->translations}",
-            "Examples: {$result->examples}",
+            "Translations for term variants: {$result->variantsCount}",
+            "Translations: {$result->translationsCount}",
+            "Examples: {$result->examplesCount}",
         ];
 
         return implode("\n", $lines);

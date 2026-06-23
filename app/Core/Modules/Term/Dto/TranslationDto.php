@@ -13,8 +13,8 @@ final readonly class TranslationDto extends Dto
     public function __construct(
         public int $id,
         public string $text,
-        public string $context_en,
-        public string $context_ru,
+        public string $contextEn,
+        public string $contextRu,
         public array $examples = [],
     ){}
 }

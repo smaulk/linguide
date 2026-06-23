@@ -5,10 +5,11 @@ namespace App\Core\Modules\Term\Dto;
 
 use App\Core\Common\Parents\Dto;
 
-final readonly class ImportTermsResultDto extends Dto
+final readonly class UpdateCandidateDto extends Dto
 {
     public function __construct(
-        public int $terms,
-        public int $variants,
+        public int $candidateId,
+        public bool $isValid,
+        public ?int $termId,
     ){}
 }

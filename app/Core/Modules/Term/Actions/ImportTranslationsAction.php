@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Core\Modules\Term\Actions;
 
 use App\Core\Common\Parents\Action;
-use App\Core\Modules\Term\Dto\ImportTranslationsResultDto;
+use App\Core\Modules\Term\Dto\StoreTranslationsResultDto;
 use App\Core\Modules\Term\SubActions\ImportTranslationsSubAction;
 use App\Infrastructure\Common\Exceptions\MissingResourceException;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ final class ImportTranslationsAction extends Action
      * @param bool $fresh очистить таблицу переводов
      * @throws Throwable|MissingResourceException
      */
-    public function run(string $resourceName, bool $fresh = false): ImportTranslationsResultDto
+    public function run(string $resourceName, bool $fresh = false): StoreTranslationsResultDto
     {
         if ($fresh) {
             $this->truncateTable();

@@ -4,12 +4,11 @@ declare(strict_types=1);
 namespace App\Core\Modules\Term\Actions;
 
 use App\Core\Common\Parents\Action;
-use App\Core\Modules\Term\SubActions\GetTermVariantsIdsToReviewSubAction;
+use App\Core\Modules\Term\SubActions\GetTermVariantIdsToReviewSubAction;
 use App\Core\Modules\Term\Tasks\CreateReviewSessionItemsTask;
 use App\Core\Modules\Term\Tasks\CreateReviewSessionTask;
 use App\Core\Modules\Term\Tasks\GetActiveReviewSessionTask;
 use App\Core\Modules\User\Models\User;
-use App\Core\Modules\User\Models\UserSetting;
 use App\Core\Modules\User\Vo\ReviewLimit;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -20,7 +19,7 @@ final class StartReviewSessionAction extends Action
         private readonly GetActiveReviewSessionTask $getActiveSessionTask,
         private readonly CreateReviewSessionTask $createSessionTask,
         private readonly CreateReviewSessionItemsTask $createSessionItemsTask,
-        private readonly GetTermVariantsIdsToReviewSubAction $getVariantsIdsSubAction,
+        private readonly GetTermVariantIdsToReviewSubAction $getVariantsIdsSubAction,
     ){}
 
     /**

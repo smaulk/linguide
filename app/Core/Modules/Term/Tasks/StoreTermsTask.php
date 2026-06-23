@@ -4,68 +4,63 @@ declare(strict_types=1);
 namespace App\Core\Modules\Term\Tasks;
 
 use App\Core\Common\Parents\Task;
-use App\Core\Modules\Term\Dto\ImportTermsResultDto;
-use App\Core\Modules\Term\Dto\TermDatasetDto;
+use App\Core\Modules\Term\Dto\StoreTermsResultDto;
+use App\Core\Modules\Term\Dto\StoreTermDto;
 use Illuminate\Support\Facades\DB;
 use LogicException;
 use stdClass;
 use Throwable;
 
-final class ImportTermsTask extends Task
+final class StoreTermsTask extends Task
 {
     private const int BATCH_SIZE = 500;
 
     /**
-     * @param iterable<TermDatasetDto> $dtoTerms
-     * @return ImportTermsResultDto
+     * @param iterable<StoreTermDto> $terms
+     * @return StoreTermsResultDto
      * @throws Throwable
      */
-    public function run(iterable $dtoTerms): ImportTermsResultDto
+    public function run(iterable $terms): StoreTermsResultDto
     {
-        $buffer = [];
-        $stats = ['terms' => 0, 'variants' => 0];
+        $stats = ['termsCount' => 0, 'variantsCount' => 0, 'termIdsByText' => []];
 
-        foreach ($dtoTerms as $dto) {
-            $buffer[] = $dto;
-
-            if (count($buffer) >= self::BATCH_SIZE) {
-                $this->handleBatch($buffer, $stats);
-                $buffer = [];
-            }
+        foreach (chunk_iterable($terms, self::BATCH_SIZE) as $batch) {
+            $this->handleBatch($batch, $stats);
         }
 
-        if (!empty($buffer)) {
-            $this->handleBatch($buffer, $stats);
-        }
-
-        return new ImportTermsResultDto(
-            terms: $stats['terms'],
-            variants: $stats['variants']
+        return new StoreTermsResultDto(
+            termIdsByText: $stats['termIdsByText'],
+            termsCount: $stats['termsCount'],
+            variantsCount: $stats['variantsCount'],
         );
     }
 
     /**
-     * @param TermDatasetDto[] $buffer
-     * @param array{"terms": int, "variants":int} $stats
+     * @param StoreTermDto[] $batch
+     * @param array{"termsCount": int, "variantsCount":int, "termIdsByText":array<string,int>} $stats
      * @throws Throwable
      */
-    private function handleBatch(array $buffer, array &$stats): void
+    private function handleBatch(array $batch, array &$stats): void
     {
-        [$t, $v] = DB::transaction(fn() => $this->processBatch($buffer));
+        [$t, $v, $termsMap] = DB::transaction(fn() => $this->processBatch($batch));
 
-        $stats['terms'] += $t;
-        $stats['variants'] += $v;
+        $stats['termsCount'] += $t;
+        $stats['variantsCount'] += $v;
+
+        foreach ($termsMap as $text => $id) {
+            $stats['termIdsByText'][$text] = $id;
+        }
     }
 
     /**
-     * @param TermDatasetDto[] $buffer
-     * @return array{0:int,1:int}
+     * @param StoreTermDto[] $buffer
+     * @return array{0:int,1:int,2:array<string, int>}
      */
     private function processBatch(array $buffer): array
     {
-        [$termsRows, $termsValues] = $this->buildTermsData($buffer);
+        [$termsRows, $termsValues] = $this->prepareTermsData($buffer);
         if (empty($termsRows)) {
-            return [0, 0];
+            return [0, 0, []];
         }
 
         $terms = DB::select(
@@ -75,7 +70,7 @@ final class ImportTermsTask extends Task
 
         $termsMap = $this->buildTermsMap($terms);
 
-        [$variantsRows, $variantsValues] = $this->buildVariantsData($buffer, $termsMap);
+        [$variantsRows, $variantsValues] = $this->prepareVariantsData($buffer, $termsMap);
         if (empty($variantsRows)) {
             throw new LogicException('Terms must have variants.');
         }
@@ -85,14 +80,18 @@ final class ImportTermsTask extends Task
             $variantsRows
         );
 
-        return [count($terms), count($variantsValues)];
+        return [
+            count($terms),
+            count($variantsValues),
+            $termsMap,
+        ];
     }
 
     /**
-     * @param TermDatasetDto[] $dtoTerms
+     * @param StoreTermDto[] $dtoTerms
      * @return array{0: array<int, mixed>, 1: string[]}
      */
-    private function buildTermsData(array $dtoTerms): array
+    private function prepareTermsData(array $dtoTerms): array
     {
         $rows = [];
         $values = [];
@@ -107,8 +106,9 @@ final class ImportTermsTask extends Task
 
             $rows[] = $termDto->text;
             $rows[] = $termDto->type->value;
+            $rows[] = $termDto->isVerified;
 
-            $values[] = '(?, ?)';
+            $values[] = '(?, ?, ?::boolean)';
         }
 
         return [$rows, $values];
@@ -129,11 +129,11 @@ final class ImportTermsTask extends Task
     }
 
     /**
-     * @param TermDatasetDto[] $dtoTerms
+     * @param StoreTermDto[] $dtoTerms
      * @param array<string, int> $termsMap
      * @return array{0: array<int, mixed>, 1: string[]}
      */
-    private function buildVariantsData(array $dtoTerms, array $termsMap): array
+    private function prepareVariantsData(array $dtoTerms, array $termsMap): array
     {
         $rows = [];
         $values = [];
@@ -146,7 +146,7 @@ final class ImportTermsTask extends Task
 
             $rows[] = $termId;
             $rows[] = $termDto->pos->value;
-            $rows[] = $termDto->level->value;
+            $rows[] = $termDto->level?->value;
 
             $values[] = '(?::integer, ?, ?::integer)';
         }
@@ -166,12 +166,12 @@ final class ImportTermsTask extends Task
         $valuesSql = $this->implodeSqlValues($values);
 
         return <<<SQL
-WITH input(text, type) AS (
+WITH input(text, type, is_verified) AS (
     VALUES $valuesSql
 ),
 upsert AS (
     INSERT INTO terms (text, type, is_verified, created_at, updated_at)
-    SELECT text, type, true, NOW(), NOW()
+    SELECT text, type, is_verified, NOW(), NOW()
     FROM input
     ON CONFLICT (text)
     DO UPDATE SET text = EXCLUDED.text
@@ -192,8 +192,7 @@ SQL;
         $valuesSql = $this->implodeSqlValues($values);
 
         return <<<SQL
-INSERT INTO term_variants
-(term_id, pos, level, created_at)
+INSERT INTO term_variants (term_id, pos, level, created_at)
 SELECT v.term_id, v.pos, v.level, NOW()
 FROM (VALUES $valuesSql)
 AS v(term_id, pos, level)

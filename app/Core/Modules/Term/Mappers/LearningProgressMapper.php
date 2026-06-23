@@ -11,12 +11,11 @@ use App\Core\Modules\Term\Dto\LearningProgressDto;
 use App\Core\Modules\Term\Dto\TranslationDto;
 use App\Core\Modules\Term\Models\TranslationExample;
 use App\Core\Modules\Term\Models\LearningProgress;
-use App\Core\Modules\Term\Models\Term;
 use App\Core\Modules\Term\Models\Translation;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-final class TermMapper
+final class LearningProgressMapper
 {
     /**
      * @param Collection<int, LearningProgress> $learningProgress
@@ -37,12 +36,12 @@ final class TermMapper
             id: $progress->id,
             repetitions: $progress->repetitions,
             interval: $progress->interval,
-            ease_factor: $progress->ease_factor,
-            due_at: $this->applyTimezone($progress->due_at, $utcOffset),
-            last_reviewed_at: $progress->last_reviewed_at !== null
+            easeFactor: $progress->ease_factor,
+            dueAt: $this->applyTimezone($progress->due_at, $utcOffset),
+            lastReviewedAt: $progress->last_reviewed_at !== null
                 ? $this->applyTimezone($progress->last_reviewed_at, $utcOffset)
                 : null,
-            created_at: $progress->created_at !== null
+            createdAt: $progress->created_at !== null
                 ? $this->applyTimezone($progress->created_at, $utcOffset)
                 : null,
             termVariant: $this->mapTermVariantModelToDto($progress->variant)
@@ -98,8 +97,8 @@ final class TermMapper
         return new TranslationDto(
             id: $translation->id,
             text: $translation->text,
-            context_en: $translation->context_en,
-            context_ru: $translation->context_ru,
+            contextEn: $translation->context_en,
+            contextRu: $translation->context_ru,
             examples: $examples,
         );
     }
@@ -108,8 +107,8 @@ final class TermMapper
     {
         return new TranslationExampleDto(
             id: $example->id,
-            sentence_en: $example->sentence_en,
-            sentence_ru: $example->sentence_ru,
+            sentenceEn: $example->sentence_en,
+            sentenceRu: $example->sentence_ru,
         );
     }
 }

@@ -6,7 +6,7 @@ namespace App\Core\Modules\Term\Actions;
 use App\Core\Common\Parents\Action;
 use App\Core\Modules\User\Vo\UtcOffset;
 use App\Core\Modules\Term\Dto\LearningProgressDto;
-use App\Core\Modules\Term\Mappers\TermMapper;
+use App\Core\Modules\Term\Mappers\LearningProgressMapper;
 use App\Core\Modules\Term\Models\LearningProgress;
 use App\Core\Modules\Term\Models\ReviewSessionItem;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +14,7 @@ use Throwable;
 
 final class GetTermFromReviewSessionAction extends Action
 {
-    public function __construct(private readonly TermMapper $mapper){}
+    public function __construct(private readonly LearningProgressMapper $mapper){}
 
     /**
      * @throws Throwable

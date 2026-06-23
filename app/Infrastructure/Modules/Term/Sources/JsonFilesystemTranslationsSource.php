@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Modules\Term\Sources;
 
-use App\Core\Modules\Term\Mappers\TranslationsDatasetMapper;
+use App\Core\Modules\Term\Mappers\StoreTranslationMapper;
 use App\Infrastructure\Common\Concerns\ReadsFilesystemStream;
 use App\Infrastructure\Modules\Term\Contracts\TranslationsSourceContract;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -16,7 +16,7 @@ final readonly class JsonFilesystemTranslationsSource implements TranslationsSou
 
     public function __construct(
         private Filesystem $fs,
-        private TranslationsDatasetMapper $mapper,
+        private StoreTranslationMapper $mapper,
     ){}
 
     public function get(string $name): iterable

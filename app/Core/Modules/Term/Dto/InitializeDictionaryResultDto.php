@@ -8,7 +8,7 @@ use App\Core\Common\Parents\Dto;
 final readonly class InitializeDictionaryResultDto extends Dto
 {
     public function __construct(
-        public ImportTermsResultDto $termsResult,
-        public ?ImportTranslationsResultDto $translationsResult,
+        public StoreTermsResultDto $termsResult,
+        public ?StoreTranslationsResultDto $translationsResult,
     ){}
 }

@@ -25,8 +25,8 @@ final class AskAiAction extends Action
     private function makeUserMessage(AskAiDto $dto): AiMessageDto
     {
         return new AiMessageDto(
-            role: AiMessageRole::USER,
             content: $dto->content,
+            role: AiMessageRole::USER,
             meta: $dto->meta,
         );
     }
@@ -36,8 +36,8 @@ final class AskAiAction extends Action
         $response = $agent->send($message);
 
         return new AiMessageDto(
-            role: AiMessageRole::ASSISTANT,
             content: $response->text,
+            role: AiMessageRole::ASSISTANT,
         );
     }
 }

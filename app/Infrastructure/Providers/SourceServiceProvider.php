@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Providers;
 
-use App\Core\Modules\Term\Mappers\TermDatasetMapper;
-use App\Core\Modules\Term\Mappers\TranslationsDatasetMapper;
+use App\Core\Modules\Term\Mappers\StoreTermMapper;
+use App\Core\Modules\Term\Mappers\StoreTranslationMapper;
 use App\Infrastructure\Modules\Ai\Contracts\InstructionSourceContract;
 use App\Infrastructure\Modules\Ai\Sources\TxtFilesystemInstructionSource;
 use App\Infrastructure\Modules\Config\Contracts\ConfigSourceContract;
@@ -30,13 +30,13 @@ class SourceServiceProvider extends ServiceProvider
         $this->app->bind(TermsSourceContract::class, function (Application $app) {
             return new CsvFilesystemTermsSource(
                 $app->make(FilesystemFactory::class)->disk('dictionary'),
-                $app->make(TermDatasetMapper::class),
+                $app->make(StoreTermMapper::class),
             );
         });
         $this->app->bind(TranslationsSourceContract::class, function (Application $app) {
             return new JsonFilesystemTranslationsSource(
                 $app->make(FilesystemFactory::class)->disk('dictionary'),
-                $app->make(TranslationsDatasetMapper::class),
+                $app->make(StoreTranslationMapper::class),
             );
         });
     }

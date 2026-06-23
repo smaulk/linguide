@@ -7,9 +7,11 @@ use App\Core\Modules\Ai\Dto\AiDriverConfigDto;
 use App\Core\Modules\Ai\Dto\AiRequestDto;
 use App\Core\Modules\Ai\Contracts\AiDriverContract;
 use App\Core\Modules\Ai\Dto\AiResponseDto;
+use App\Core\Modules\Ai\Exceptions\AiUnavailableException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 
 abstract class AiDriver implements AiDriverContract
@@ -20,12 +22,25 @@ abstract class AiDriver implements AiDriverContract
     ){}
 
     /**
-     * @throws ConnectionException
+     * @throws RequestException
+     * @throws AiUnavailableException
      */
     final public function send(AiRequestDto $request): AiResponseDto
     {
         $payload = $this->mapRequest($request);
-        $response = $this->callApi($payload);
+
+        try {
+            $response = $this->callApi($payload);
+        } catch (ConnectionException $e) {
+            throw new AiUnavailableException(previous: $e);
+        } catch (RequestException $e) {
+            if (in_array($e->response->status(), [429, 500, 502, 503, 504], true)) {
+                throw new AiUnavailableException(previous: $e);
+            }
+
+            throw $e;
+        }
+
         $raw = $response->json();
 
         return $this->mapResponse($raw);
@@ -57,6 +72,7 @@ abstract class AiDriver implements AiDriverContract
      * @param array<string, mixed> $payload
      * @return Response
      * @throws ConnectionException
+     * @throws RequestException
      */
     abstract protected function callApi(array $payload): Response;
 
