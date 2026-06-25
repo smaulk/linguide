@@ -19,7 +19,6 @@ return new class extends Migration
             $table->timestampsTz();
 
             $table->unique(['text']);
-            $table->index(['is_verified']);
         });
     }
 
