@@ -1,13 +1,12 @@
 #!/bin/sh
 set -e
 
+php artisan optimize
+
 # Если передана команда — просто запускаем её
 if [ $# -gt 0 ]; then
     exec "$@"
 fi
-
-php artisan config:cache
-php artisan route:cache
 
 # Запускаем nginx + php-fpm через supervisor
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
