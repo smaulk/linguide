@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Core\Modules\Term\Actions;
 
 use App\Core\Common\Parents\Action;
-use App\Core\Modules\Term\SubActions\GetTermVariantIdsToReviewSubAction;
+use App\Core\Modules\Term\SubActions\GetLearningTermsToReviewSubAction;
 use App\Core\Modules\Term\Tasks\CreateReviewSessionItemsTask;
 use App\Core\Modules\Term\Tasks\CreateReviewSessionTask;
 use App\Core\Modules\Term\Tasks\GetActiveReviewSessionTask;
@@ -19,7 +19,7 @@ final class StartReviewSessionAction extends Action
         private readonly GetActiveReviewSessionTask $getActiveSessionTask,
         private readonly CreateReviewSessionTask $createSessionTask,
         private readonly CreateReviewSessionItemsTask $createSessionItemsTask,
-        private readonly GetTermVariantIdsToReviewSubAction $getVariantsIdsSubAction,
+        private readonly GetLearningTermsToReviewSubAction $getLearningTermsSubAction,
     ){}
 
     /**
@@ -37,13 +37,17 @@ final class StartReviewSessionAction extends Action
             $user = $this->getUser($userId);
             $settings = $user->settingsOrFail();
 
-            $variantsIds = $this->getVariantsIds($user->id, $settings->review_limit);
-            if ($variantsIds === []) {
+            $learningTerms = $this->getLearningTermsSubAction->run(
+                $user->id,
+                ReviewLimit::fromInt($settings->review_limit)
+            );
+
+            if ($learningTerms->isEmpty()) {
                 return null;
             }
 
             $session = $this->createSessionTask->run($user->id);
-            $this->createSessionItemsTask->run($session->id, $variantsIds);
+            $this->createSessionItemsTask->run($session->id, $learningTerms);
 
             return $session->id;
         });
@@ -55,18 +59,5 @@ final class StartReviewSessionAction extends Action
             ->select(['id'])
             ->with(['settings:user_id,review_limit'])
             ->findOrFail($userId);
-    }
-
-
-    /**
-     * @return int[]
-     * @throws Throwable
-     */
-    private function getVariantsIds(int $userId, int $reviewLimit): array
-    {
-        return $this->getVariantsIdsSubAction->run(
-            $userId,
-            ReviewLimit::fromInt($reviewLimit)
-        );
     }
 }

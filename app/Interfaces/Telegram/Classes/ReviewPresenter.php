@@ -4,18 +4,41 @@ declare(strict_types=1);
 namespace App\Interfaces\Telegram\Classes;
 
 use App\Core\Modules\Term\Dto\ReviewSessionStatisticDto;
+use App\Core\Modules\Term\Dto\ReviewTermDto;
 use App\Core\Modules\Term\Dto\TermVariantDto;
 use App\Core\Modules\Term\Dto\LearningProgressDto;
 use App\Core\Modules\Term\Dto\TranslationExampleDto;
+use App\Core\Modules\Term\Enums\ReviewMode;
 use App\Core\Modules\Term\Enums\TermType;
+use App\Core\Modules\Term\Models\LearningProgress;
 use App\Interfaces\Telegram\Response\Markdown\Render\MarkdownEscaper;
 
 final class ReviewPresenter
 {
-    public function term(LearningProgressDto $learningProgress): string
+    public function term(ReviewTermDto $reviewTerm): string
     {
-        $term = $learningProgress->termVariant;
+        $progress = $reviewTerm->learningProgress;
+        $term = $progress->termVariant;
 
+        $rows = match ($reviewTerm->mode) {
+            ReviewMode::EnglishToRussian => $this->getTermRowsEnToRu($term),
+            ReviewMode::RussianToEnglish => $this->getTermRowsRuToEn($term),
+        };
+
+        $rows = [
+            ...$rows,
+            '',
+            ...$this->buildTermReviewInfo($progress),
+        ];
+
+        return implode("\n", $rows);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getTermRowsEnToRu(TermVariantDto $term): array
+    {
         $rows = [
             "__*{$term->text}*__",
         ];
@@ -24,13 +47,26 @@ final class ReviewPresenter
             $rows[] = "_\({$term->pos->ru()}\)_";
         }
 
-        $rows = [
-            ...$rows,
-            '',
-            ...$this->buildTermReviewInfo($learningProgress),
-        ];
+        return $rows;
+    }
 
-        return implode("\n", $rows);
+    /**
+     * @return string[]
+     */
+    private function getTermRowsRuToEn(TermVariantDto $term): array
+    {
+        $translations = [];
+        foreach ($term->translations as $translation) {
+            $translations[] = "__*{$translation->text}*__";
+        }
+
+        $rows[] = implode(", ", $translations);
+
+        if ($term->type === TermType::WORD) {
+            $rows[] = "_\({$term->pos->ru()}\)_";
+        }
+
+        return $rows;
     }
 
     /**

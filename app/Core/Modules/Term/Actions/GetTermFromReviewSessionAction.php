@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace App\Core\Modules\Term\Actions;
 
 use App\Core\Common\Parents\Action;
+use App\Core\Modules\Term\Dto\ReviewTermDto;
 use App\Core\Modules\User\Vo\UtcOffset;
-use App\Core\Modules\Term\Dto\LearningProgressDto;
 use App\Core\Modules\Term\Mappers\LearningProgressMapper;
 use App\Core\Modules\Term\Models\LearningProgress;
 use App\Core\Modules\Term\Models\ReviewSessionItem;
@@ -19,31 +19,36 @@ final class GetTermFromReviewSessionAction extends Action
     /**
      * @throws Throwable
      */
-    public function run(int $sessionId, ?UtcOffset $utcOffset = null): ?LearningProgressDto
+    public function run(int $sessionId, ?UtcOffset $utcOffset = null): ?ReviewTermDto
     {
-        $learningProgress = DB::transaction(function () use ($sessionId) {
+        [$sessionItem, $learningProgress] = DB::transaction(function () use ($sessionId) {
             $sessionItem = $this->getSessionItem($sessionId);
             if ($sessionItem === null) {
-                return null;
+                return [null, null];
             }
 
             $this->markAsPresented($sessionItem->id);
 
-            return $this->getLearningProgress(
-                $sessionItem->session->user_id,
-                $sessionItem->variant_id,
-            );
+            return [
+                $sessionItem,
+                $this->getLearningProgress($sessionItem->session->user_id, $sessionItem->variant_id),
+            ];
         });
 
-        return $learningProgress !== null
-            ? $this->mapper->mapLearningProgressModelToDto($learningProgress, $utcOffset)
-            : null;
+        if ($sessionItem === null || $learningProgress === null) {
+            return null;
+        }
+
+        return new ReviewTermDto(
+            learningProgress: $this->mapper->mapLearningProgressModelToDto($learningProgress, $utcOffset),
+            mode: $sessionItem->mode,
+        );
     }
 
     private function getSessionItem(int $sessionId): ?ReviewSessionItem
     {
         return ReviewSessionItem::query()
-            ->select(['id', 'session_id', 'variant_id'])
+            ->select(['id', 'session_id', 'variant_id', 'mode'])
             ->where('session_id', $sessionId)
             ->whereNull('answered_at')
             ->with(['session:id,user_id'])

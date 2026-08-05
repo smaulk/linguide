@@ -9,9 +9,10 @@ use App\Core\Modules\Term\Models\LearningProgress;
 use App\Core\Modules\Term\Tasks\GetTermVariantIdsForLearningTask;
 use App\Core\Modules\Term\Tasks\StoreLearningProgressTask;
 use App\Core\Modules\User\Vo\ReviewLimit;
+use Illuminate\Database\Eloquent\Collection;
 use Throwable;
 
-final class GetTermVariantIdsToReviewSubAction extends Action
+final class GetLearningTermsToReviewSubAction extends Action
 {
     public function __construct(
         private readonly GetTermVariantIdsForLearningTask $getTermVarIdsTask,
@@ -19,10 +20,10 @@ final class GetTermVariantIdsToReviewSubAction extends Action
     ){}
 
     /**
-     * @return int[]
+     * @return Collection<int, LearningProgress>
      * @throws Throwable
      */
-    public function run(int $userId, ReviewLimit $reviewLimit): array
+    public function run(int $userId, ReviewLimit $reviewLimit): Collection
     {
         $userReviewLimit = $reviewLimit->value();
         $termsCount = $this->getTermsForLearningCount($userId);
@@ -50,17 +51,17 @@ final class GetTermVariantIdsToReviewSubAction extends Action
     }
 
     /**
-     * @return int[]
+     * @return Collection<int, LearningProgress>
      */
-    private function getTermsForLearning(int $userId, int $count): array
+    private function getTermsForLearning(int $userId, int $count): Collection
     {
         return LearningProgress::query()
+            ->select(['id', 'user_id', 'variant_id', 'repetitions'])
             ->where('user_id', $userId)
             ->where('due_at', '<=', now())
             ->whereHas('variant.translations')
             ->oldest('due_at')
             ->limit($count)
-            ->pluck('variant_id')
-            ->all();
+            ->get();
     }
 }

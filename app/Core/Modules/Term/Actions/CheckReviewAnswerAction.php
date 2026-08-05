@@ -6,6 +6,7 @@ namespace App\Core\Modules\Term\Actions;
 use App\Core\Common\Parents\Action;
 use App\Core\Modules\Term\Dto\TermVariantDto;
 use App\Core\Modules\Term\Enums\ReviewAnswerResult;
+use App\Core\Modules\Term\Enums\ReviewMode;
 use LogicException;
 use RuntimeException;
 
@@ -15,7 +16,7 @@ final class CheckReviewAnswerAction extends Action
      * @throws LogicException
      * @throws RuntimeException
      */
-    public function run(TermVariantDto $termVariant, string $answer): ReviewAnswerResult
+    public function run(ReviewMode $mode, TermVariantDto $termVariant, string $answer): ReviewAnswerResult
     {
         if ($termVariant->translations === []) {
             throw new LogicException(
@@ -23,6 +24,14 @@ final class CheckReviewAnswerAction extends Action
             );
         }
 
+        return match ($mode) {
+            ReviewMode::EnglishToRussian => $this->checkAnswerModeEnToRu($termVariant, $answer),
+            ReviewMode::RussianToEnglish => $this->checkAnswerModeRuToEn($termVariant, $answer),
+        };
+    }
+
+    private function checkAnswerModeEnToRu(TermVariantDto $termVariant, string $answer): ReviewAnswerResult
+    {
         foreach ($termVariant->translations as $translation) {
             if ($this->isAnswerCorrect($translation->text, $answer)) {
                 return ReviewAnswerResult::CORRECT;
@@ -32,19 +41,26 @@ final class CheckReviewAnswerAction extends Action
         return ReviewAnswerResult::WRONG;
     }
 
+    private function checkAnswerModeRuToEn(TermVariantDto $termVariant, string $answer): ReviewAnswerResult
+    {
+        return $this->isAnswerCorrect($termVariant->text, $answer)
+            ? ReviewAnswerResult::CORRECT
+            : ReviewAnswerResult::WRONG;
+    }
+
     /**
      * @throws RuntimeException
      */
-    private function isAnswerCorrect(string $translation, string $answer): bool
+    private function isAnswerCorrect(string $correct, string $answer): bool
     {
-        $translation = mb_strtolower(trim($translation));
+        $correct = mb_strtolower(trim($correct));
         $answer = mb_strtolower(trim($answer));
 
-        if ($translation === $answer) {
+        if ($correct === $answer) {
             return true;
         }
 
-        $valueLen = mb_strlen($translation);
+        $valueLen = mb_strlen($correct);
         $answerLen = mb_strlen($answer);
 
         // Слишком большая разница в длине — сразу false
@@ -52,7 +68,7 @@ final class CheckReviewAnswerAction extends Action
             return false;
         }
 
-        $distance = $this->levenshtein($translation, $answer);
+        $distance = $this->levenshtein($correct, $answer);
 
         // Допустимое количество ошибок в зависимости от длины
         $tolerance = match (true) {

@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property ?Carbon $last_reviewed_at
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
+ * @property int $reverse_chance Шанс (0 - 100) на обратный перевод, на основе текущего прогресса изучения
  *
  * @property-read User $user
  * @property-read TermVariant $variant
@@ -37,6 +38,16 @@ final class LearningProgress extends Model
 
     public const float DEFAULT_EASE_FACTOR = 2.5;
 
+    public function getReverseChanceAttribute(): int
+    {
+        return match ($this->repetitions) {
+            0       => 0,
+            1       => 10,
+            2       => 25,
+            3       => 40,
+            default => 50,
+        };
+    }
 
     protected $table = 'learning_progress';
 

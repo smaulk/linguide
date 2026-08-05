@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Conversations;
 
+use App\Core\Modules\Term\Dto\ReviewTermDto;
 use App\Core\Modules\User\Vo\UtcOffset;
 use App\Core\Modules\Term\Actions\CheckReviewAnswerAction;
 use App\Core\Modules\Term\Actions\EvaluateReviewAnswerAction;
@@ -27,7 +28,7 @@ final class ReviewConversation extends Conversation
     public function __construct(
         private readonly AppUserContext $userContext,
         private readonly StartReviewSessionAction $startSessionAction,
-        private readonly GetTermFromReviewSessionAction $getTermAction,
+        private readonly GetTermFromReviewSessionAction $getReviewTermAction,
         private readonly CheckReviewAnswerAction $checkAnswerAction,
         private readonly EvaluateReviewAnswerAction $evaluateAnswerAction,
         private readonly GetFinishedReviewSessionStatisticAction $getStatisticsAction,
@@ -61,18 +62,18 @@ final class ReviewConversation extends Conversation
             return;
         }
 
-        $learningProgress = $this->getLearningProgress($sessionId, $utcOffset);
-        if ($learningProgress === null) {
+        $reviewTerm = $this->getReviewTerm($sessionId, $utcOffset);
+        if ($reviewTerm === null) {
             $this->endReview($bot, $sessionId);
             return;
         }
 
-        $answerResult = $this->resolveAnswerResult($bot, $learningProgress);
+        $answerResult = $this->resolveAnswerResult($bot, $reviewTerm);
         if ($answerResult === null) {
             return;
         }
 
-        $this->processAnswer($bot, $sessionId, $learningProgress, $answerResult);
+        $this->processAnswer($bot, $sessionId, $reviewTerm->learningProgress, $answerResult);
         $this->sendNextTermOrEnd($bot, $sessionId, $utcOffset);
     }
 
@@ -87,7 +88,7 @@ final class ReviewConversation extends Conversation
         return $this->sessionId;
     }
 
-    private function resolveAnswerResult(Nutgram $bot, LearningProgressDto $progress): ?ReviewAnswerResult
+    private function resolveAnswerResult(Nutgram $bot, ReviewTermDto $reviewTerm): ?ReviewAnswerResult
     {
         if ($this->isForgotCallback($bot)) {
             $bot->editMessageReplyMarkup();
@@ -95,15 +96,20 @@ final class ReviewConversation extends Conversation
         }
 
         $message = $this->getMessageText($bot);
+        if ($message === null) {
+            return null;
+        }
 
-        return $message !== null
-            ? $this->checkAnswerAction->run($progress->termVariant, $message)
-            : null;
+        return $this->checkAnswerAction->run(
+            $reviewTerm->mode,
+            $reviewTerm->learningProgress->termVariant,
+            $message
+        );
     }
 
     private function sendNextTermOrEnd(Nutgram $bot, int $sessionId, ?UtcOffset $utcOffset): void
     {
-        $next = $this->getLearningProgress($sessionId, $utcOffset);
+        $next = $this->getReviewTerm($sessionId, $utcOffset);
         if ($next === null) {
             $this->endReview($bot, $sessionId);
             return;
@@ -113,9 +119,9 @@ final class ReviewConversation extends Conversation
         $this->next('checkTerm');
     }
 
-    private function getLearningProgress(int $sessionId, ?UtcOffset $utcOffset): ?LearningProgressDto
+    private function getReviewTerm(int $sessionId, ?UtcOffset $utcOffset): ?ReviewTermDto
     {
-        return $this->getTermAction->run($sessionId, $utcOffset);
+        return $this->getReviewTermAction->run($sessionId, $utcOffset);
     }
 
     private function endReview(Nutgram $bot, int $sessionId): void
@@ -139,10 +145,10 @@ final class ReviewConversation extends Conversation
         );
     }
 
-    private function sendTerm(Nutgram $bot, LearningProgressDto $progress): void
+    private function sendTerm(Nutgram $bot, ReviewTermDto $reviewTerm): void
     {
         $bot->sendMessage(
-            text: $this->presenter->term($progress),
+            text: $this->presenter->term($reviewTerm),
             parse_mode: ParseMode::MARKDOWN,
             reply_markup: $this->inlineKeyboard->make(),
         );

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Core\Modules\Term\Models;
 
 use App\Core\Common\Parents\Model;
+use App\Core\Modules\Term\Enums\ReviewMode;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -11,6 +12,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $session_id
  * @property int $variant_id
+ * @property ReviewMode $mode
  * @property bool $is_correct
  * @property ?Carbon $presented_at
  * @property ?Carbon $answered_at
@@ -24,6 +26,7 @@ final class ReviewSessionItem extends Model
     public $timestamps = false;
 
     protected $casts = [
+        'mode'         => ReviewMode::class,
         'is_correct'   => 'boolean',
         'presented_at' => 'datetime',
         'answered_at'  => 'datetime',
