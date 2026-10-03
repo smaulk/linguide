@@ -63,18 +63,18 @@ services:
       - linguide
     restart: unless-stopped
 
-#  scheduler:
-#    image: ghcr.io/smaulk/linguide:latest
-#    command: ["php", "artisan", "schedule:work"]
-#    env_file: .env
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#      redis:
-#        condition: service_healthy
-#    networks:
-#      - linguide
-#    restart: unless-stopped
+  scheduler:
+    image: ghcr.io/smaulk/linguide:${IMAGE_TAG}
+    command: ["php", "artisan", "schedule:work"]
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - linguide
+    restart: unless-stopped
 
 networks:
   linguide:
