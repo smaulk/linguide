@@ -6,13 +6,12 @@ namespace App\Interfaces\Telegram\Handlers;
 use App\Core\Modules\User\Actions\UpdateUserSettingAction;
 use App\Core\Modules\User\Dto\UserDto;
 use App\Core\Modules\User\Dto\UserSettingsDto;
-use App\Core\Modules\User\Vo\ReviewLimit;
 use App\Interfaces\Telegram\Classes\AppUserContext;
 use App\Interfaces\Telegram\Parents\Handler;
 use SergiX44\Nutgram\Nutgram;
 use Throwable;
 
-final class SetUserReviewLimitHandler extends Handler
+final class SetUserRemindersHandler extends Handler
 {
     public function __construct(
         private readonly AppUserContext $userContext,
@@ -22,33 +21,34 @@ final class SetUserReviewLimitHandler extends Handler
     /**
      * @throws Throwable
      */
-    public function __invoke(Nutgram $bot, int $limit): void
+    public function __invoke(Nutgram $bot, int $enabled): void
     {
         $bot->answerCallbackQuery();
 
-        $reviewLimit = ReviewLimit::fromInt($limit);
+        $remindersEnabled = (bool)$enabled;
         $appUser = $this->userContext->get($bot);
 
-        $this->updateUserReviewLimit($appUser, $reviewLimit);
+        $this->updateUserReminders($appUser, $remindersEnabled);
 
-        $bot->editMessageText($this->getText($reviewLimit));
+        $bot->editMessageText($this->getText($remindersEnabled));
     }
 
     /**
      * @throws Throwable
      */
-    private function updateUserReviewLimit(UserDto $appUser, ReviewLimit $limit): void
+    private function updateUserReminders(UserDto $appUser, bool $remindersEnabled): void
     {
         $this->updateAction->run($appUser->id, new UserSettingsDto(
             level: $appUser->settings->level,
             utcOffset: $appUser->settings->utcOffset,
-            reviewLimit: $limit,
-            remindersEnabled: $appUser->settings->remindersEnabled,
+            reviewLimit: $appUser->settings->reviewLimit,
+            remindersEnabled: $remindersEnabled,
         ));
     }
 
-    private function getText(ReviewLimit $limit): string
+    private function getText(bool $remindersEnabled): string
     {
-        return "Вы установили для себя лимит: {$limit->value()}";
+        $change = $remindersEnabled ? 'включили' : 'выключили';
+        return "Вы {$change} напоминания о повторении!";
     }
 }

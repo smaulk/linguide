@@ -43,6 +43,7 @@ final class SetUserLevelHandler extends Handler
             level: $level,
             utcOffset: $appUser->settings->utcOffset,
             reviewLimit: $appUser->settings->reviewLimit,
+            remindersEnabled: $appUser->settings->remindersEnabled,
         ));
     }
 

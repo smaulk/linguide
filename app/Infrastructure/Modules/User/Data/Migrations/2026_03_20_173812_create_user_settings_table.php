@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('user_settings', function (Blueprint $table) {
             $table->foreignId('user_id')
+                ->unique()
                 ->constrained('users', 'id')
                 ->cascadeOnDelete();
-            $table->index('user_id');
 
             $table->unsignedTinyInteger('level')->nullable();
             $table->smallInteger('utc_offset')->nullable();

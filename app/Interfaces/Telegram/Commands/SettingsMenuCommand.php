@@ -8,6 +8,7 @@ enum SettingsMenuCommand: string
     case LEVEL        = '🎯 Уровень знания';
     case TIMEZONE     = '🕒 Часовой пояс';
     case REVIEW_LIMIT = "🔢 Количество для повторения";
+    case REMINDERS    = "🔔 Напоминания о повторении";
 
     case SELECT_LEVEL_CALLBACK        = 'select-level';
     case SELECT_TIMEZONE_CALLBACK     = 'select-timezone-offset';
@@ -16,4 +17,5 @@ enum SettingsMenuCommand: string
     case SET_LEVEL_CALLBACK        = 'set-level:';
     case SET_TIMEZONE_CALLBACK     = 'set-timezone-offset:';
     case SET_REVIEW_LIMIT_CALLBACK = 'set-review-limit:';
+    case SET_REMINDERS_CALLBACK    = 'set-review-reminders:';
 }

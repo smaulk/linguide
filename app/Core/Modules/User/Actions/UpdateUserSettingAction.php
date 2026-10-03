@@ -22,6 +22,7 @@ final class UpdateUserSettingAction extends Action
         $userSetting->level = $dto->level;
         $userSetting->utc_offset = $dto->utcOffset?->value();
         $userSetting->review_limit = $dto->reviewLimit->value();
+        $userSetting->reminders_enabled = $dto->remindersEnabled;
 
         $userSetting->saveOrFail();
     }

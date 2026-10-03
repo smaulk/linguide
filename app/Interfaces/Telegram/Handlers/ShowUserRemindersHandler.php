@@ -3,17 +3,16 @@ declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Handlers;
 
-use App\Core\Modules\User\Vo\ReviewLimit;
 use App\Interfaces\Telegram\Classes\AppUserContext;
-use App\Interfaces\Telegram\Keyboards\Inline\ShowUserReviewLimitInlineKeyboard;
+use App\Interfaces\Telegram\Keyboards\Inline\SelectionUserRemindersInlineKeyboard;
 use App\Interfaces\Telegram\Parents\Handler;
 use SergiX44\Nutgram\Nutgram;
 
-final class ShowUserReviewLimitHandler extends Handler
+final class ShowUserRemindersHandler extends Handler
 {
     public function __construct(
         private readonly AppUserContext $userContext,
-        private readonly ShowUserReviewLimitInlineKeyboard $keyboard
+        private readonly SelectionUserRemindersInlineKeyboard $keyboard
     ){}
 
     public function __invoke(Nutgram $bot): void
@@ -22,13 +21,14 @@ final class ShowUserReviewLimitHandler extends Handler
         $settings = $appUser->settings;
 
         $bot->sendMessage(
-            text: $this->getText($settings->reviewLimit),
+            text: $this->getText($settings->remindersEnabled),
             reply_markup: $this->keyboard->make(),
         );
     }
 
-    private function getText(ReviewLimit $limit): string
+    private function getText(bool $remindersEnabled): string
     {
-        return 'Ваше количество терминов для повторения: ' . $limit->value();
+        $status = $remindersEnabled ? 'включены' : 'выключены';
+        return 'Напоминания о повторении: ' . $status;
     }
 }

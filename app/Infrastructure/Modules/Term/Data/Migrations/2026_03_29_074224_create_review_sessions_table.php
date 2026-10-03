@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestampTz('finished_at')->nullable();
             $table->timestampTz('updated_at')->nullable();
 
-            $table->index(['user_id', 'status']);
+            $table->index(['user_id', 'status', 'finished_at']);
         });
     }
 

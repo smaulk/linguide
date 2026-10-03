@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
  * @property ?LanguageLevel $level
  * @property ?int $utc_offset
  * @property int $review_limit
+ * @property bool $reminders_enabled
  * @property ?Carbon $created_at
  * @property ?Carbon $updated_at
  *
@@ -26,7 +27,8 @@ final class UserSetting extends Model
     public $incrementing = false;
 
     protected $casts = [
-        'level' => LanguageLevel::class,
+        'level'             => LanguageLevel::class,
+        'reminders_enabled' => 'boolean',
     ];
 
     /**

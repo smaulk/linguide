@@ -32,6 +32,7 @@ final class UserMapper
                 level: $settings->level,
                 utcOffset: $utcOffset,
                 reviewLimit: $reviewLimit,
+                remindersEnabled: $settings->reminders_enabled,
             ),
         );
     }

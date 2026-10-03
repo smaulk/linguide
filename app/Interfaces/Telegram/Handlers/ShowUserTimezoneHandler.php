@@ -30,7 +30,7 @@ final class ShowUserTimezoneHandler extends Handler
     private function getText(?UtcOffset $offset): string
     {
         return $offset !== null
-            ? "Ваш текущий часовой пояс: $offset."
+            ? 'Ваш текущий часовой пояс: ' . $offset
             : 'У вас не установлен часовой пояс!';
     }
 }

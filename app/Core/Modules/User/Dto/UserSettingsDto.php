@@ -14,5 +14,6 @@ final readonly class UserSettingsDto extends Dto
         public ?LanguageLevel $level,
         public ?UtcOffset $utcOffset,
         public ReviewLimit $reviewLimit,
+        public bool $remindersEnabled,
     ){}
 }

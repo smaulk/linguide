@@ -8,7 +8,9 @@ use App\Interfaces\Telegram\Conversations\ReviewConversation;
 use App\Interfaces\Telegram\Conversations\TalkConversation;
 use App\Interfaces\Telegram\Handlers\ExceptionHandler;
 use App\Interfaces\Telegram\Handlers\FallbackHandler;
+use App\Interfaces\Telegram\Handlers\SetUserRemindersHandler;
 use App\Interfaces\Telegram\Handlers\ShowUserLevelHandler;
+use App\Interfaces\Telegram\Handlers\ShowUserRemindersHandler;
 use App\Interfaces\Telegram\Handlers\ShowUserTimezoneHandler;
 use App\Interfaces\Telegram\Handlers\ShowUserReviewLimitHandler;
 use App\Interfaces\Telegram\Handlers\MainMenuHandler;
@@ -43,6 +45,7 @@ $bot->onText(MainMenuCommand::ADD_TERMS->value, AddTermsConversation::class);
 $bot->onText(SettingsMenuCommand::LEVEL->value, ShowUserLevelHandler::class);
 $bot->onText(SettingsMenuCommand::TIMEZONE->value, ShowUserTimezoneHandler::class);
 $bot->onText(SettingsMenuCommand::REVIEW_LIMIT->value, ShowUserReviewLimitHandler::class);
+$bot->onText(SettingsMenuCommand::REMINDERS->value, ShowUserRemindersHandler::class);
 
 // SELECT
 $bot->onCallbackQueryData(
@@ -70,6 +73,10 @@ $bot->onCallbackQueryData(
 $bot->onCallbackQueryData(
     SettingsMenuCommand::SET_REVIEW_LIMIT_CALLBACK->value . '{limit}',
     SetUserReviewLimitHandler::class,
+);
+$bot->onCallbackQueryData(
+    SettingsMenuCommand::SET_REMINDERS_CALLBACK->value . '{enabled}',
+    SetUserRemindersHandler::class,
 );
 // endregion
 

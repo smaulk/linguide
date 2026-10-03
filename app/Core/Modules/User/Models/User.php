@@ -6,6 +6,7 @@ namespace App\Core\Modules\User\Models;
 use App\Core\Common\Parents\Model;
 use App\Core\Modules\AiConversation\Models\AiConversation;
 use App\Core\Modules\Term\Models\LearningProgress;
+use App\Core\Modules\Term\Models\ReviewSession;
 use App\Core\Modules\User\Enums\UserStatus;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -67,6 +68,14 @@ final class User extends Model implements AuthenticatableContract
     public function learningProgress(): HasMany
     {
         return $this->hasMany(LearningProgress::class, 'user_id', 'id');
+    }
+
+    /**
+     * @return HasMany<ReviewSession, $this>
+     */
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(ReviewSession::class, 'user_id', 'id');
     }
 
     /**

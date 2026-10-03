@@ -30,7 +30,7 @@ final class ShowUserLevelHandler extends Handler
     private function getText(?LanguageLevel $level): string
     {
         return $level !== null
-            ? "Ваш текущий уровень: $level->name."
+            ? 'Ваш текущий уровень: ' . $level->name
             : 'У вас не установлен уровень!';
     }
 }

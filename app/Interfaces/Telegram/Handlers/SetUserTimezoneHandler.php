@@ -43,6 +43,7 @@ final class SetUserTimezoneHandler extends Handler
             level: $appUser->settings->level,
             utcOffset: $utcOffset,
             reviewLimit: $appUser->settings->reviewLimit,
+            remindersEnabled: $appUser->settings->remindersEnabled,
         ));
     }
 

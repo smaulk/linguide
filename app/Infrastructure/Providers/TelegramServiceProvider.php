@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Providers;
 
 use App\Interfaces\Telegram\Contracts\TelegramMiddlewareContract;
+use App\Infrastructure\Modules\Notification\Channels\TelegramNotificationChannel;
 use App\Interfaces\Telegram\Middlewares\EnsureUserHasAccessTgMiddleware;
 use App\Interfaces\Telegram\Middlewares\OnboardingUserTgMiddleware;
 use App\Interfaces\Telegram\Middlewares\ResolveUserTgMiddleware;
@@ -17,6 +18,8 @@ class TelegramServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->resolveTelegramBot();
+
+        $this->app->tag([TelegramNotificationChannel::class], 'notification.channels');
     }
 
     public function boot(): void
