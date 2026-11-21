@@ -1,17 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Interfaces\Telegram\Conversations;
 
-use App\Core\Modules\Term\Dto\ReviewTermDto;
-use App\Core\Modules\User\Vo\UtcOffset;
 use App\Core\Modules\Term\Actions\CheckReviewAnswerAction;
 use App\Core\Modules\Term\Actions\EvaluateReviewAnswerAction;
-use App\Core\Modules\Term\Actions\GetTermFromReviewSessionAction;
 use App\Core\Modules\Term\Actions\GetFinishedReviewSessionStatisticAction;
+use App\Core\Modules\Term\Actions\GetTermFromReviewSessionAction;
 use App\Core\Modules\Term\Actions\StartReviewSessionAction;
 use App\Core\Modules\Term\Dto\LearningProgressDto;
+use App\Core\Modules\Term\Dto\ReviewTermDto;
 use App\Core\Modules\Term\Enums\ReviewAnswerResult;
+use App\Core\Modules\User\Vo\UtcOffset;
 use App\Interfaces\Telegram\Classes\AppUserContext;
 use App\Interfaces\Telegram\Classes\CallbackParser;
 use App\Interfaces\Telegram\Classes\ReviewPresenter;
@@ -19,7 +20,6 @@ use App\Interfaces\Telegram\Commands\ReviewCommand;
 use App\Interfaces\Telegram\Keyboards\Inline\ReviewInlineKeyboard;
 use App\Interfaces\Telegram\Parents\Conversation;
 use SergiX44\Nutgram\Nutgram;
-use SergiX44\Nutgram\Telegram\Properties\ParseMode;
 
 final class ReviewConversation extends Conversation
 {
@@ -34,7 +34,7 @@ final class ReviewConversation extends Conversation
         private readonly GetFinishedReviewSessionStatisticAction $getStatisticsAction,
         private readonly ReviewInlineKeyboard $inlineKeyboard,
         private readonly ReviewPresenter $presenter,
-    ){}
+    ) {}
 
     public function start(Nutgram $bot): void
     {
@@ -44,6 +44,7 @@ final class ReviewConversation extends Conversation
         if ($sessionId === null) {
             $bot->sendMessage('Нет возможности запустить повторение :(');
             $this->end();
+
             return;
         }
 
@@ -59,12 +60,14 @@ final class ReviewConversation extends Conversation
         if ($sessionId === null) {
             $bot->sendMessage('Произошла неожиданная ошибка.');
             $this->end();
+
             return;
         }
 
         $reviewTerm = $this->getReviewTerm($sessionId, $utcOffset);
         if ($reviewTerm === null) {
             $this->endReview($bot, $sessionId);
+
             return;
         }
 
@@ -85,6 +88,7 @@ final class ReviewConversation extends Conversation
     private function startSession(int $userId): ?int
     {
         $this->sessionId = $this->startSessionAction->run($userId);
+
         return $this->sessionId;
     }
 
@@ -92,6 +96,7 @@ final class ReviewConversation extends Conversation
     {
         if ($this->isForgotCallback($bot)) {
             $bot->editMessageReplyMarkup();
+
             return ReviewAnswerResult::WRONG;
         }
 
@@ -112,6 +117,7 @@ final class ReviewConversation extends Conversation
         $next = $this->getReviewTerm($sessionId, $utcOffset);
         if ($next === null) {
             $this->endReview($bot, $sessionId);
+
             return;
         }
 
@@ -133,8 +139,7 @@ final class ReviewConversation extends Conversation
 
     private function processAnswer(
         Nutgram $bot, int $sessionId, LearningProgressDto $progress, ReviewAnswerResult $answerResult
-    ): void
-    {
+    ): void {
         $this->evaluateAnswerAction->run($sessionId, $progress->termVariant->id, $answerResult);
 
         $bot->sendMessage(
@@ -149,7 +154,7 @@ final class ReviewConversation extends Conversation
     {
         $bot->sendMessage(
             text: $this->presenter->term($reviewTerm),
-            parse_mode: ParseMode::MARKDOWN,
+            parse_mode: 'MarkdownV2',
             reply_markup: $this->inlineKeyboard->make(),
         );
     }
@@ -167,6 +172,7 @@ final class ReviewConversation extends Conversation
     private function getMessageText(Nutgram $bot): ?string
     {
         $text = trim($bot->message()->text ?? '');
+
         return $text !== '' ? $text : null;
     }
 }
