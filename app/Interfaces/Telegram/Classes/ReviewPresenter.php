@@ -39,8 +39,9 @@ final class ReviewPresenter
      */
     private function getTermRowsEnToRu(TermVariantDto $term): array
     {
+        $text = MarkdownEscaper::escape($term->text);
         $rows = [
-            "__*{$term->text}*__",
+            "__*{$text}*__",
         ];
 
         if ($term->type === TermType::WORD) {
@@ -57,7 +58,8 @@ final class ReviewPresenter
     {
         $translations = [];
         foreach ($term->translations as $translation) {
-            $translations[] = "__*{$translation->text}*__";
+            $text = MarkdownEscaper::escape($translation->text);
+            $translations[] = "__*{$text}*__";
         }
 
         $rows[] = implode(", ", $translations);
