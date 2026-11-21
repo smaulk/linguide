@@ -13,6 +13,7 @@ enum ReviewStatisticsPeriod: string
     case MONTH = 'month';
     case HALF_YEAR = 'half_year';
     case YEAR = 'year';
+    case ALL_TIME = 'all_time';
 
     public function label(): string
     {
@@ -22,6 +23,7 @@ enum ReviewStatisticsPeriod: string
             self::MONTH => '📆 Месяц',
             self::HALF_YEAR => '📊 Полгода',
             self::YEAR => '📈 Год',
+            self::ALL_TIME => '♾️ За всё время',
         };
     }
 
@@ -36,7 +38,7 @@ enum ReviewStatisticsPeriod: string
         return null;
     }
 
-    public function startAt(Carbon $end): Carbon
+    public function startAt(Carbon $end): ?Carbon
     {
         return match ($this) {
             self::DAY => $end->copy()->subDay(),
@@ -44,6 +46,7 @@ enum ReviewStatisticsPeriod: string
             self::MONTH => $end->copy()->subDays(30),
             self::HALF_YEAR => $end->copy()->subMonthsNoOverflow(6),
             self::YEAR => $end->copy()->subYearNoOverflow(),
+            self::ALL_TIME => null,
         };
     }
 
@@ -55,6 +58,7 @@ enum ReviewStatisticsPeriod: string
             self::MONTH => 'за последние 30 дней',
             self::HALF_YEAR => 'за последние 6 месяцев',
             self::YEAR => 'за последние 12 месяцев',
+            self::ALL_TIME => 'за всё время',
         };
     }
 }

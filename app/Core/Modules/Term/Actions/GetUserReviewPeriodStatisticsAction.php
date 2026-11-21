@@ -11,6 +11,7 @@ use App\Core\Modules\Term\Enums\ReviewStatisticsPeriod;
 use App\Core\Modules\Term\Models\LearningProgress;
 use App\Core\Modules\Term\Models\ReviewSession;
 use App\Core\Modules\Term\Models\ReviewSessionItem;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -22,29 +23,33 @@ final class GetUserReviewPeriodStatisticsAction extends Action
         $end = now()->utc();
         $start = $period->startAt($end);
 
-        $finishedSessions = ReviewSession::query()
-            ->where('user_id', $userId)
-            ->where('status', ReviewSessionStatus::FINISHED)
-            ->whereBetween('finished_at', [$start, $end]);
+        $finishedSessions = $this->finishedSessionsQuery($userId, $start, $end);
 
         $sessionsCount = (clone $finishedSessions)->count();
 
         $answeredItems = ReviewSessionItem::query()
-            ->join('review_sessions', 'review_sessions.id', '=', 'review_session_items.session_id')
-            ->where('review_sessions.user_id', $userId)
-            ->where('review_sessions.status', ReviewSessionStatus::FINISHED)
-            ->whereBetween('review_sessions.finished_at', [$start, $end])
-            ->whereNotNull('review_session_items.answered_at');
+            ->whereIn('session_id', (clone $finishedSessions)->select('id'))
+            ->whereNotNull('answered_at');
 
         $answeredTermsCount = (clone $answeredItems)->count();
         $correctAnswersCount = (clone $answeredItems)
             ->where('review_session_items.is_correct', true)
             ->count();
 
-        $finishedAtTimestamps = (clone $finishedSessions)
+        $activityTimestamps = (clone $finishedSessions)
             ->orderBy('finished_at')
             ->pluck('finished_at');
-        $activityDays = $this->getActivityDays($finishedAtTimestamps, $timezone);
+        $activityDays = $this->getActivityDays($activityTimestamps, $timezone);
+
+        $streakSessions = $period === ReviewStatisticsPeriod::ALL_TIME
+            ? $finishedSessions
+            : $this->finishedSessionsQuery($userId, null, $end);
+        $streakTimestamps = (clone $streakSessions)
+            ->orderBy('finished_at')
+            ->pluck('finished_at');
+        $allTimeActivityDays = $period === ReviewStatisticsPeriod::ALL_TIME
+            ? $activityDays
+            : $this->getActivityDays($streakTimestamps, $timezone);
 
         return new ReviewPeriodStatisticsDto(
             sessionsCount: $sessionsCount,
@@ -54,8 +59,23 @@ final class GetUserReviewPeriodStatisticsAction extends Action
                 : round($correctAnswersCount / $answeredTermsCount * 100, 1),
             wellLearnedWordsCount: $this->getWellLearnedWordsCount($userId),
             activeDaysCount: $activityDays->count(),
-            longestActivityStreak: $this->getLongestActivityStreak($activityDays),
+            longestActivityStreak: $this->getLongestActivityStreak($allTimeActivityDays),
         );
+    }
+
+    /** @return Builder<ReviewSession> */
+    private function finishedSessionsQuery(int $userId, ?Carbon $start, Carbon $end): Builder
+    {
+        $query = ReviewSession::query()
+            ->where('user_id', $userId)
+            ->where('status', ReviewSessionStatus::FINISHED)
+            ->where('finished_at', '<=', $end);
+
+        if ($start !== null) {
+            $query->where('finished_at', '>=', $start);
+        }
+
+        return $query;
     }
 
     private function getWellLearnedWordsCount(int $userId): int

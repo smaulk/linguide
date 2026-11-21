@@ -63,6 +63,22 @@ final class GetUserReviewPeriodStatisticsActionTest extends TestCase
             'updated_at' => now(),
         ]);
 
+        $olderSessionId = $this->createSession(
+            $userId,
+            ReviewSessionStatus::FINISHED,
+            '2026-10-30 18:01:00 UTC',
+            '2026-10-30 17:40:00 UTC',
+        );
+        $this->createAnsweredItem($olderSessionId, $variantId, true, '2026-10-30 18:00:00 UTC');
+
+        $nextOlderSessionId = $this->createSession(
+            $userId,
+            ReviewSessionStatus::FINISHED,
+            '2026-10-31 18:01:00 UTC',
+            '2026-10-31 17:40:00 UTC',
+        );
+        $this->createAnsweredItem($nextOlderSessionId, $variantId, true, '2026-10-31 18:00:00 UTC');
+
         $sessionId = $this->createSession(
             $userId,
             ReviewSessionStatus::FINISHED,
@@ -102,7 +118,7 @@ final class GetUserReviewPeriodStatisticsActionTest extends TestCase
         self::assertSame(75.0, $statistics->correctAnswersPercent);
         self::assertSame(1, $statistics->wellLearnedWordsCount);
         self::assertSame(3, $statistics->activeDaysCount);
-        self::assertSame(2, $statistics->longestActivityStreak);
+        self::assertSame(4, $statistics->longestActivityStreak);
     }
 
     public function test_empty_period_returns_zero_statistics(): void

@@ -41,7 +41,7 @@ final class ShowReviewStatisticsHandler extends Handler
     {
         $lines = ['📊 Статистика '.$period->periodName()];
         if ($statistics->sessionsCount === 0) {
-            $lines[] = 'За этот период повторений не было.';
+            $lines[] = 'За выбранный период повторений не было.';
         }
 
         $lines = array_merge($lines, [
@@ -49,8 +49,10 @@ final class ShowReviewStatisticsHandler extends Handler
             $this->countLabel($statistics->sessionsCount, 'сессия', 'сессии', 'сессий').' повторения',
             'Повторений терминов: '.$statistics->answeredTermsCount,
             'Верных ответов: '.number_format($statistics->correctAnswersPercent, 1, ',', '').'%',
-            $this->countLabel($statistics->wellLearnedWordsCount, 'хорошо выученное слово', 'хорошо выученных слова', 'хорошо выученных слов'),
             $this->countLabel($statistics->activeDaysCount, 'день с повторениями', 'дня с повторениями', 'дней с повторениями'),
+            '',
+            '📚 За всё время:',
+            $this->countLabel($statistics->wellLearnedWordsCount, 'хорошо выученное слово', 'хорошо выученных слова', 'хорошо выученных слов'),
             'Самая длинная серия подряд: '.$this->countLabel($statistics->longestActivityStreak, 'день', 'дня', 'дней'),
         ]);
 

@@ -25,6 +25,7 @@ final class ReviewStatisticsPeriodReplyKeyboard extends ReplyKeyboard
             ],
             [
                 KeyboardButton::make(text: ReviewStatisticsPeriod::YEAR->label()),
+                KeyboardButton::make(text: ReviewStatisticsPeriod::ALL_TIME->label()),
             ],
             [
                 KeyboardButton::make(text: BaseCommand::BACK_MAIN_MENU->value, style: ButtonStyle::PRIMARY),
