@@ -1,28 +1,32 @@
 <?php
+
 /** @var SergiX44\Nutgram\Nutgram $bot */
 
+use App\Core\Modules\Term\Enums\ReviewStatisticsPeriod;
 use App\Interfaces\Telegram\Commands\BaseCommand;
 use App\Interfaces\Telegram\Commands\MainMenuCommand;
+use App\Interfaces\Telegram\Commands\SettingsMenuCommand;
 use App\Interfaces\Telegram\Conversations\AddTermsConversation;
 use App\Interfaces\Telegram\Conversations\ReviewConversation;
 use App\Interfaces\Telegram\Conversations\TalkConversation;
 use App\Interfaces\Telegram\Handlers\ExceptionHandler;
 use App\Interfaces\Telegram\Handlers\FallbackHandler;
-use App\Interfaces\Telegram\Handlers\SetUserRemindersHandler;
-use App\Interfaces\Telegram\Handlers\ShowUserLevelHandler;
-use App\Interfaces\Telegram\Handlers\ShowUserRemindersHandler;
-use App\Interfaces\Telegram\Handlers\ShowUserTimezoneHandler;
-use App\Interfaces\Telegram\Handlers\ShowUserReviewLimitHandler;
 use App\Interfaces\Telegram\Handlers\MainMenuHandler;
+use App\Interfaces\Telegram\Handlers\ReviewStatisticsMenuHandler;
+use App\Interfaces\Telegram\Handlers\SelectionUserLevelHandler;
+use App\Interfaces\Telegram\Handlers\SelectionUserReviewLimitHandler;
+use App\Interfaces\Telegram\Handlers\SelectionUserTimezoneHandler;
 use App\Interfaces\Telegram\Handlers\SettingsMenuHandler;
 use App\Interfaces\Telegram\Handlers\SetUserLevelHandler;
-use App\Interfaces\Telegram\Handlers\SetUserTimezoneHandler;
+use App\Interfaces\Telegram\Handlers\SetUserRemindersHandler;
 use App\Interfaces\Telegram\Handlers\SetUserReviewLimitHandler;
+use App\Interfaces\Telegram\Handlers\SetUserTimezoneHandler;
+use App\Interfaces\Telegram\Handlers\ShowReviewStatisticsHandler;
+use App\Interfaces\Telegram\Handlers\ShowUserLevelHandler;
+use App\Interfaces\Telegram\Handlers\ShowUserRemindersHandler;
+use App\Interfaces\Telegram\Handlers\ShowUserReviewLimitHandler;
+use App\Interfaces\Telegram\Handlers\ShowUserTimezoneHandler;
 use App\Interfaces\Telegram\Handlers\StartHandler;
-use App\Interfaces\Telegram\Handlers\SelectionUserLevelHandler;
-use App\Interfaces\Telegram\Handlers\SelectionUserTimezoneHandler;
-use App\Interfaces\Telegram\Handlers\SelectionUserReviewLimitHandler;
-use \App\Interfaces\Telegram\Commands\SettingsMenuCommand;
 
 $bot->onException(ExceptionHandler::class);
 $bot->fallback(FallbackHandler::class);
@@ -37,6 +41,10 @@ $bot->onText(MainMenuCommand::SETTINGS->value, SettingsMenuHandler::class);
 $bot->onText(MainMenuCommand::START_TALK->value, TalkConversation::class);
 $bot->onText(MainMenuCommand::REVIEW->value, ReviewConversation::class);
 $bot->onText(MainMenuCommand::ADD_TERMS->value, AddTermsConversation::class);
+$bot->onText(MainMenuCommand::STATISTICS->value, ReviewStatisticsMenuHandler::class);
+foreach (ReviewStatisticsPeriod::cases() as $period) {
+    $bot->onText($period->label(), ShowReviewStatisticsHandler::class);
+}
 // endregion
 
 // region Settings menu
@@ -63,19 +71,19 @@ $bot->onCallbackQueryData(
 
 // SET
 $bot->onCallbackQueryData(
-    SettingsMenuCommand::SET_LEVEL_CALLBACK->value . '{level}',
+    SettingsMenuCommand::SET_LEVEL_CALLBACK->value.'{level}',
     SetUserLevelHandler::class
 );
 $bot->onCallbackQueryData(
-    SettingsMenuCommand::SET_TIMEZONE_CALLBACK->value . '{offset}',
+    SettingsMenuCommand::SET_TIMEZONE_CALLBACK->value.'{offset}',
     SetUserTimezoneHandler::class,
 );
 $bot->onCallbackQueryData(
-    SettingsMenuCommand::SET_REVIEW_LIMIT_CALLBACK->value . '{limit}',
+    SettingsMenuCommand::SET_REVIEW_LIMIT_CALLBACK->value.'{limit}',
     SetUserReviewLimitHandler::class,
 );
 $bot->onCallbackQueryData(
-    SettingsMenuCommand::SET_REMINDERS_CALLBACK->value . '{enabled}',
+    SettingsMenuCommand::SET_REMINDERS_CALLBACK->value.'{enabled}',
     SetUserRemindersHandler::class,
 );
 // endregion
